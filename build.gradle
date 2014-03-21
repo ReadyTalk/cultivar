@@ -64,12 +64,13 @@ subprojects {
     showViolations = true
     sourceSets = [sourceSets.main]
     configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
   }
       
   findbugs {
     toolVersion = '2.0.3'
     sourceSets = [sourceSets.main]
-    ignoreFailures = true
+    ignoreFailures = false
   }
   
   jacocoTestReport {
