@@ -1,0 +1,110 @@
+defaultTasks 'build'
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'checkstyle'
+  apply plugin: 'findbugs'
+  apply plugin: 'jacoco'
+  
+  defaultTasks 'build'
+  
+  sourceSets {
+    integTest {
+      compileClasspath += main.output + test.output
+      runtimeClasspath += main.output + test.output
+    }
+  }
+  
+  configurations {
+    integTestCompile {
+      extendsFrom testCompile, compile
+    }
+  
+    integTestRuntime.extendsFrom testRuntime
+  }
+  
+  repositories {
+    mavenCentral()
+  }
+  
+  group = 'org.waterprinciple.cultivar'
+  version = '1.0.0-SNAPSHOT'
+  
+  dependencies {
+    compile (
+      'javax.inject:javax.inject:1',
+      'com.google.code.findbugs:jsr305:2.0.3',
+      'com.google.code.findbugs:annotations:2.0.3',
+      'org.slf4j:slf4j-api:1.7.6',
+      'com.google.guava:guava:16.0.1',
+      'com.codahale.metrics:metrics-core:3.0.2',
+    )
+    
+    compile ('org.apache.curator:curator-x-discovery:2.4.1') {
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+
+    compile ('org.apache.curator:curator-recipes:2.4.1') {
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+    
+    testCompile (
+      'junit:junit:4.10',
+      'org.mockito:mockito-all:1.9.5',
+      'org.slf4j:slf4j-jdk14:1.7.6',
+    )
+    
+    testCompile('org.apache.curator:curator-test:2.4.1') {
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+  }
+  
+  checkstyle {
+    toolVersion = '5.7'
+    showViolations = true
+    sourceSets = [sourceSets.main]
+    configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+  }
+      
+  findbugs {
+    toolVersion = '2.0.3'
+    sourceSets = [sourceSets.main]
+    ignoreFailures = true
+  }
+  
+  jacocoTestReport {
+    reports {
+        html.enabled = true
+        csv.enabled = true
+        xml.enabled = true
+    } 
+  }
+  
+  task integTest(type: Test) {
+    testClassesDir = sourceSets.integTest.output.classesDir
+    classpath = sourceSets.integTest.runtimeClasspath
+  
+    testReportDir = file("$buildDir/reports/integTests")
+  
+    jacoco {
+      destinationFile = file("$buildDir/jacoco/test.exec")
+      append = true
+    }
+  }
+  
+  jacocoTestReport.dependsOn(test)
+  integTest.dependsOn test
+  build.dependsOn javadoc
+  build.dependsOn jacocoTestReport
+  build.dependsOn integTest
+  
+  jacocoTestReport.mustRunAfter integTest
+  
+  tasks.withType(Compile) { 
+    options.compilerArgs << "-Xlint:all" 
+  }
+}
+
+wrapper {
+	gradleVersion '1.11'
+}
