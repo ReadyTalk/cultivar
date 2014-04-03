@@ -11,8 +11,6 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.ensemble.fixed.FixedEnsembleProvider;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.api.CuratorEvent;
-import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.junit.After;
@@ -101,15 +99,6 @@ public class LeaderScheduledServiceIntegTest extends AbstractZookeeperClusterTes
         manager = inj.getInstance(CultivarStartStopManager.class);
 
         framework = inj.getInstance(Key.get(CuratorFramework.class, Curator.class));
-
-        framework.getCuratorListenable().addListener(new CuratorListener() {
-            @Override
-            public void eventReceived(CuratorFramework client, CuratorEvent event) throws Exception {
-
-                logger.warn("Curator Event: {}", event.getType());
-
-            }
-        });
 
         manager.startAsync();
     }
