@@ -1,14 +1,23 @@
 defaultTasks 'build'
 
 subprojects {
-  
-
   apply plugin: 'java'
   apply plugin: 'checkstyle'
   apply plugin: 'findbugs'
   apply plugin: 'jacoco'
   
   defaultTasks 'build'
+  
+  project.ext.libVersions = [
+    curator: "2.4.2",
+    slf4j: "1.7.7",
+    findbugs: "2.0.3",
+    junit: "4.10",
+    guice: "3.0",
+    metrics: "3.0.2",
+    guava: "17.0",
+    mockito: "1.9.5",
+  ]
   
   sourceSets {
     integTest {
@@ -34,31 +43,18 @@ subprojects {
   
   dependencies {
     compile (
-      'javax.inject:javax.inject:1',
-      'com.google.code.findbugs:jsr305:2.0.3',
-      'com.google.code.findbugs:annotations:2.0.3',
-      'org.slf4j:slf4j-api:1.7.7',
-      'com.google.guava:guava:17.0',
-      'com.codahale.metrics:metrics-core:3.0.2',
+      "javax.inject:javax.inject:1",
+      "com.google.code.findbugs:jsr305:${libVersions.findbugs}",
+      "com.google.code.findbugs:annotations:${libVersions.findbugs}",
+      "org.slf4j:slf4j-api:${libVersions.slf4j}",
+      "com.google.guava:guava:${libVersions.guava}",
     )
-    
-    compile ('org.apache.curator:curator-x-discovery:2.4.1') {
-      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-    }
-
-    compile ('org.apache.curator:curator-recipes:2.4.1') {
-      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-    }
     
     testCompile (
-      'junit:junit:4.10',
-      'org.mockito:mockito-all:1.9.5',
-      'org.slf4j:slf4j-jdk14:1.7.7',
+      "junit:junit:${libVersions.junit}",
+      "org.mockito:mockito-all:${libVersions.mockito}",
+      "org.slf4j:slf4j-jdk14:${libVersions.slf4j}",
     )
-    
-    testCompile('org.apache.curator:curator-test:2.4.1') {
-      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-    }
   }
   
   checkstyle {
@@ -70,7 +66,7 @@ subprojects {
   }
       
   findbugs {
-    toolVersion = '2.0.3'
+    toolVersion = "${libVersions.findbugs}"
     sourceSets = [sourceSets.main]
     ignoreFailures = false
   }

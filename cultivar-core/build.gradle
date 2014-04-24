@@ -1,0 +1,20 @@
+dependencies {
+  compile (
+    "com.google.inject:guice:${libVersions.guice}",
+    "com.google.inject.extensions:guice-multibindings:${libVersions.guice}",
+    "com.google.inject.extensions:guice-assistedinject:${libVersions.guice}",
+    "com.codahale.metrics:metrics-core:${libVersions.metrics}",
+  )
+  
+  compile ("org.apache.curator:curator-recipes:${libVersions.curator}") {
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+  }
+  
+  testCompile (
+    project(':cultivar-test'),
+  )
+}
+
+javadoc {
+  title = "Cultivar Client Library"
+}

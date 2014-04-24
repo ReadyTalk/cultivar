@@ -14,8 +14,8 @@ Curator is in many ways a great framework, but it is rather unopinionated about 
  * You know what Curator objects you will need around the time your application starts up (this will change in the future as an absolute requirement, but is still going to be the primary method of using Cultivar).
  * Your use cases in how you access services are relatively homogenous (so if you access service A using a round-robin strategy from Service X you will probably use a round robin strategy from Service Y as well) and you want the ability to share these practices in the form of a client library.
  
- Future Work
- -----------
+Future Work
+-----------
 
 In no particular order:
 
