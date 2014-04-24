@@ -1,0 +1,17 @@
+dependencies {
+  compile (
+    "junit:junit:${libVersions.junit}",
+  )
+  
+  compile ("org.apache.curator:curator-test:${libVersions.curator}") {
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+  }
+  
+  testCompile ("org.apache.curator:curator-recipes:${libVersions.curator}") {
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+  }
+}
+
+javadoc {
+  title = "Cultivar Test Library"
+}

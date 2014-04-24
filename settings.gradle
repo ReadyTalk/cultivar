@@ -1,1 +1,1 @@
-include 'cultivar-client'
+include 'cultivar-core', 'cultivar-test', 'cultivar-discovery'
