@@ -1,6 +1,8 @@
 defaultTasks 'build'
 
 subprojects {
+  
+
   apply plugin: 'java'
   apply plugin: 'checkstyle'
   apply plugin: 'findbugs'
@@ -35,8 +37,8 @@ subprojects {
       'javax.inject:javax.inject:1',
       'com.google.code.findbugs:jsr305:2.0.3',
       'com.google.code.findbugs:annotations:2.0.3',
-      'org.slf4j:slf4j-api:1.7.6',
-      'com.google.guava:guava:16.0.1',
+      'org.slf4j:slf4j-api:1.7.7',
+      'com.google.guava:guava:17.0',
       'com.codahale.metrics:metrics-core:3.0.2',
     )
     
@@ -51,7 +53,7 @@ subprojects {
     testCompile (
       'junit:junit:4.10',
       'org.mockito:mockito-all:1.9.5',
-      'org.slf4j:slf4j-jdk14:1.7.6',
+      'org.slf4j:slf4j-jdk14:1.7.7',
     )
     
     testCompile('org.apache.curator:curator-test:2.4.1') {
@@ -71,6 +73,13 @@ subprojects {
     toolVersion = '2.0.3'
     sourceSets = [sourceSets.main]
     ignoreFailures = false
+  }
+  
+  tasks.withType(FindBugs) {
+    reports {
+      xml.enabled = false
+      html.enabled = true
+    }
   }
   
   jacocoTestReport {
