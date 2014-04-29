@@ -14,9 +14,12 @@ import com.google.common.annotations.Beta;
 
 @Beta
 public abstract class AbstractZookeeperClusterTest {
+
     protected static final int CLUSTER_SIZE = 3;
 
-    private static final long MAX_TEST_TIME_SECONDS = 15L;
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractZookeeperClusterTest.class);
+
+    private static final long MAX_TEST_TIME_SECONDS = 30L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractZookeeperClusterTest.class);
 
@@ -27,6 +30,9 @@ public abstract class AbstractZookeeperClusterTest {
             super.before();
 
             testingCluster.start();
+
+            LOG.info("{}-servers started with connection string: {}", testingCluster.getServers().size(),
+                    testingCluster.getConnectString());
         }
 
         @Override
@@ -34,6 +40,7 @@ public abstract class AbstractZookeeperClusterTest {
             super.after();
 
             try {
+                LOG.info("Tearing Down Cluster.");
                 testingCluster.close();
             } catch (IOException ex) {
                 LOGGER.warn("Exception shutting down cluster.", ex);
@@ -42,8 +49,7 @@ public abstract class AbstractZookeeperClusterTest {
     };
 
     @Rule
-    public final Timeout timeout = new Timeout((int) TimeUnit.MILLISECONDS.convert(MAX_TEST_TIME_SECONDS,
-            TimeUnit.SECONDS));
+    public final Timeout timeout = new Timeout((int) TimeUnit.SECONDS.toMillis(MAX_TEST_TIME_SECONDS));
 
     protected final TestingCluster testingCluster = new TestingCluster(CLUSTER_SIZE);
 }
