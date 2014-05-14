@@ -36,6 +36,11 @@ public class AnnotationHolder {
         return new AnnotationHolder(null, checkNotNull(annotationClass));
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> Key<T> generateKey(final Class<T> clazz) {
+        return (Key<T>) this.generateKey((Type) clazz);
+    }
+
     public Key<?> generateKey(final Type type) {
         if (annotation != null) {
             return Key.get(type, annotation);

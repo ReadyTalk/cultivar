@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.api.UnhandledErrorListener;
 import org.apache.curator.framework.state.ConnectionStateListener;
+import org.waterprinciple.cultivar.barriers.BarrierModule;
+import org.waterprinciple.cultivar.connection.LastKnownStateModule;
 
 import com.google.common.annotations.Beta;
 import com.google.common.util.concurrent.ServiceManager;
@@ -34,6 +36,8 @@ public class CuratorModule extends AbstractModule {
     @Override
     protected void configure() {
         install(new CuratorInnerModule(dependencies));
+        install(new BarrierModule());
+        install(new LastKnownStateModule());
 
         Multibinder.newSetBinder(binder(), CuratorService.class);
 
