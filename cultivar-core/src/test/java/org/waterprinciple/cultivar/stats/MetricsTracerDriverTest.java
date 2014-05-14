@@ -41,7 +41,7 @@ public class MetricsTracerDriverTest {
     public void addTrace_WithName_AddsPrefix() {
         tracer.addTrace("trace", 10L, TimeUnit.MILLISECONDS);
 
-        verify(metrics).timer("prefix.trace");
+        verify(metrics).timer("prefix.trace.trace");
     }
 
     @Test
@@ -55,7 +55,7 @@ public class MetricsTracerDriverTest {
     public void addCount_WithName_AddsPrefix() {
         tracer.addCount("count", 2);
 
-        verify(metrics).meter("prefix.count");
+        verify(metrics).meter("prefix.trace.count");
     }
 
     @Test
