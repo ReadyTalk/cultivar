@@ -23,3 +23,4 @@ In no particular order:
  * Create clean patterns around post-initialization creation of Curator patterns.
  * Allow for multiple ZK instances.
  * Allow the use of bound objects instead of instances for things like `ProviderStrategy`.
+ * Document various binding options, making it clearer how to configure instances.
