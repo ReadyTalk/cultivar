@@ -39,7 +39,7 @@ subprojects {
     mavenCentral()
   }
   
-  group = 'org.waterprinciple.cultivar'
+  group = 'org.readytalk.cultivar'
   version = '1.0.0-SNAPSHOT'
   
   dependencies {
