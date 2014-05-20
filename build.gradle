@@ -81,9 +81,9 @@ subprojects {
   
   jacocoTestReport {
     reports {
-        html.enabled = true
-        csv.enabled = true
-        xml.enabled = true
+      html.enabled = true
+      csv.enabled = true
+      xml.enabled = true
     } 
   }
   
@@ -113,5 +113,5 @@ subprojects {
 }
 
 wrapper {
-	gradleVersion '1.11'
+  gradleVersion '1.11'
 }
