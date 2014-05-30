@@ -56,7 +56,7 @@ public class LeaderServiceModuleBuilderTest {
         public void implementation_Null_ThrowsNPE() {
             thrown.expect(NullPointerException.class);
 
-            serviceModuleBuilder.implementation(null);
+            serviceModuleBuilder.implementation((TypeLiteral<LeaderService>)null);
         }
 
         @Test
@@ -114,7 +114,16 @@ public class LeaderServiceModuleBuilderTest {
         }
 
         @Test
-        public void build_WithImplementation_ReturnsModule() {
+        public void build_WithClassImplementation_ReturnsModule() {
+            serviceModuleBuilder.implementation(BlankTestService.class);
+
+            assertNotNull("Module is null.", serviceModuleBuilder.build());
+        }
+
+
+
+        @Test
+        public void build_WithTypeImplementation_ReturnsModule() {
             serviceModuleBuilder.implementation(TypeLiteral.get(BlankTestService.class));
 
             assertNotNull("Module is null.", serviceModuleBuilder.build());

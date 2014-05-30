@@ -71,7 +71,7 @@ public class LeaderScheduledServiceIntegTest extends AbstractZookeeperClusterTes
 
                 install(LeaderServiceModuleBuilder
                         .create(Key.get(ScheduledLoggingLeaderService.class, Names.named("service1")))
-                        .implementation(TypeLiteral.get(ScheduledLoggingLeaderService.class))
+                        .implementation(ScheduledLoggingLeaderService.class)
                         .dependencies(new AbstractModule() {
                             @Override
                             protected void configure() {
@@ -80,7 +80,7 @@ public class LeaderScheduledServiceIntegTest extends AbstractZookeeperClusterTes
                         }).build());
                 install(LeaderServiceModuleBuilder
                         .create(Key.get(ScheduledLoggingLeaderService.class, Names.named("service2")))
-                        .implementation(TypeLiteral.get(ScheduledLoggingLeaderService.class))
+                        .implementation(ScheduledLoggingLeaderService.class)
                         .dependencies(new AbstractModule() {
                             @Override
                             protected void configure() {

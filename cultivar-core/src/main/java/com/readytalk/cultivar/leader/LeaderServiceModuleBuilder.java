@@ -38,6 +38,10 @@ public final class LeaderServiceModuleBuilder<T extends LeaderService> {
         return this;
     }
 
+    public LeaderServiceModuleBuilder implementation(final Class<? extends T> clazz) {
+        return implementation(TypeLiteral.get(clazz));
+    }
+
     public static <T extends LeaderService> LeaderServiceModuleBuilder<T> create(final Key<T> key) {
         return new LeaderServiceModuleBuilder<T>(checkNotNull(key));
     }

@@ -64,7 +64,7 @@ public class ServiceProviderModuleBuilderTest {
 
         @Before
         public void setUp() throws Exception {
-            builder = ServiceProviderModuleBuilder.create(Void.class);
+            builder = ServiceProviderModuleBuilder.create();
         }
 
         @Test

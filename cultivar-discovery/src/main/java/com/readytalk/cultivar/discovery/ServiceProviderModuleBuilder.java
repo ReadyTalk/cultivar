@@ -10,15 +10,6 @@ import java.util.concurrent.ThreadFactory;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.google.common.annotations.Beta;
-import com.readytalk.cultivar.internal.AnnotationHolder;
-import com.readytalk.cultivar.internal.Private;
-import org.apache.curator.x.discovery.DownInstancePolicy;
-import org.apache.curator.x.discovery.InstanceFilter;
-import org.apache.curator.x.discovery.ProviderStrategy;
-import org.apache.curator.x.discovery.ServiceProvider;
-import org.apache.curator.x.discovery.ServiceProviderBuilder;
-import com.readytalk.cultivar.CuratorService;
-
 import com.google.common.collect.Sets;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
@@ -28,6 +19,15 @@ import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.util.Types;
+import com.readytalk.cultivar.CuratorService;
+import com.readytalk.cultivar.internal.AnnotationHolder;
+import com.readytalk.cultivar.internal.Private;
+
+import org.apache.curator.x.discovery.DownInstancePolicy;
+import org.apache.curator.x.discovery.InstanceFilter;
+import org.apache.curator.x.discovery.ProviderStrategy;
+import org.apache.curator.x.discovery.ServiceProvider;
+import org.apache.curator.x.discovery.ServiceProviderBuilder;
 
 @Beta
 @NotThreadSafe
@@ -51,6 +51,10 @@ public class ServiceProviderModuleBuilder<T> {
 
     ServiceProviderModuleBuilder(final Class<T> payloadClass) {
         this.payloadClass = payloadClass;
+    }
+
+    public static ServiceProviderModuleBuilder<Void> create() {
+        return create(Void.class);
     }
 
     public static <T> ServiceProviderModuleBuilder<T> create(final Class<T> payloadClass) {
