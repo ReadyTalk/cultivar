@@ -8,7 +8,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Module;
+import com.google.inject.name.Names;
+import com.readytalk.cultivar.Curator;
 import com.readytalk.cultivar.util.PropertyReader;
+
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.ensemble.exhibitor.ExhibitorEnsembleProvider;
@@ -20,12 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.name.Names;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EnsembleProviderIntegTest {
@@ -60,7 +62,7 @@ public class EnsembleProviderIntegTest {
 
         Injector inj = Guice.createInjector(module);
 
-        assertEquals(CONNECTION, inj.getInstance(EnsembleProvider.class).getConnectionString());
+        assertEquals(CONNECTION, inj.getInstance(Key.get(EnsembleProvider.class, Curator.class)).getConnectionString());
     }
 
     @Test
@@ -72,7 +74,7 @@ public class EnsembleProviderIntegTest {
 
         Injector inj = Guice.createInjector(module);
 
-        assertTrue(inj.getInstance(EnsembleProvider.class) instanceof ExhibitorEnsembleProvider);
+        assertTrue(inj.getInstance(Key.get(EnsembleProvider.class, Curator.class)) instanceof ExhibitorEnsembleProvider);
     }
 
     @Test
@@ -85,7 +87,8 @@ public class EnsembleProviderIntegTest {
             }
         });
 
-        assertEquals("localhost:2181", inj.getInstance(EnsembleProvider.class).getConnectionString());
+        assertEquals("localhost:2181", inj.getInstance(Key.get(EnsembleProvider.class, Curator.class))
+                .getConnectionString());
     }
 
     @Test
@@ -106,7 +109,8 @@ public class EnsembleProviderIntegTest {
             }
         });
 
-        ExhibitorEnsembleProvider provider = (ExhibitorEnsembleProvider) inj.getInstance(EnsembleProvider.class);
+        ExhibitorEnsembleProvider provider = (ExhibitorEnsembleProvider) inj.getInstance(Key.get(
+                EnsembleProvider.class, Curator.class));
 
         provider.pollForInitialEnsemble();
 
