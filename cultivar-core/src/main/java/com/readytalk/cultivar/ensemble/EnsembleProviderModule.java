@@ -7,6 +7,7 @@ import com.google.inject.PrivateModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.util.Types;
+import com.readytalk.cultivar.Curator;
 
 import org.apache.curator.ensemble.EnsembleProvider;
 
@@ -47,9 +48,10 @@ public class EnsembleProviderModule extends PrivateModule {
                         Names.named("Cultivar.private.properties.exhibitorInstances"))).toProvider(
                 ExhibitorProvider.class);
 
-        bind(EnsembleProvider.class).toProvider(EnsembleProviderProvider.class).in(Singleton.class);
+        bind(EnsembleProvider.class).annotatedWith(Curator.class).toProvider(EnsembleProviderProvider.class)
+                .in(Singleton.class);
 
-        expose(EnsembleProvider.class);
+        expose(EnsembleProvider.class).annotatedWith(Curator.class);
     }
 
 }
