@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import com.readytalk.cultivar.util.PropertyReader;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.ensemble.exhibitor.ExhibitorEnsembleProvider;
@@ -42,12 +43,16 @@ public class EnsembleProviderIntegTest {
         module = new EnsembleProviderModule();
 
         System.setProperty(ConnectionProvider.PROPERTY_NAME, CONNECTION);
+
+        PropertyReader.reset();
     }
 
     @After
     public void tearDown() {
         System.clearProperty(ConnectionProvider.PROPERTY_NAME);
         System.clearProperty(ExhibitorProvider.PROPERTY_NAME);
+
+        PropertyReader.reset();
     }
 
     @Test
@@ -62,6 +67,8 @@ public class EnsembleProviderIntegTest {
     public void instance_ConnectionAndExhibitorProviderProperties_ReturnsExhibitorProvider() {
 
         System.setProperty(ExhibitorProvider.PROPERTY_NAME, CONNECTION);
+
+        PropertyReader.reset();
 
         Injector inj = Guice.createInjector(module);
 

@@ -1,19 +1,14 @@
 package com.readytalk.cultivar.ensemble;
 
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.curator.ensemble.EnsembleProvider;
-import com.readytalk.cultivar.internal.Private;
-
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
 import com.google.inject.Key;
 import com.google.inject.PrivateModule;
-import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.util.Types;
+
+import org.apache.curator.ensemble.EnsembleProvider;
 
 /**
  * Binds an EnsembleProvider.
@@ -21,6 +16,18 @@ import com.google.inject.util.Types;
  * <li>If no exhibitor instances are provider (server property cultivar.zookeeper.exhibitor) then it uses a fixed
  * provider.</li>
  * <li>If no connection string is provided it crashes.</li>
+ * </ul>
+ * 
+ * Mandatory Bindings:
+ * 
+ * Optional Bindings:
+ * 
+ * <ul>
+ * <li>Cultivar.properties.exhibitor.restPort : int (8080)</li>
+ * <li>Cultivar.properties.exhibitor.restPath : String (/exhibitor/v1/cluster/list)</li>
+ * <li>Cultivar.properties.exhibitor.pollingTimeMillis : int (5 minutes)</li>
+ * <li>Cultivar.properties.exhibitor.retryPolicy : RetryPolicy</li>
+ * <li>: ExhibitorRestClient (DefaultExhibitorRestClient(false))</li>
  * </ul>
  */
 @Beta
@@ -43,18 +50,6 @@ public class EnsembleProviderModule extends PrivateModule {
         bind(EnsembleProvider.class).toProvider(EnsembleProviderProvider.class).in(Singleton.class);
 
         expose(EnsembleProvider.class);
-    }
-
-    @Provides
-    @Private
-    public Map<String, String> environment() {
-        return System.getenv();
-    }
-
-    @Provides
-    @Private
-    public Properties properties() {
-        return System.getProperties();
     }
 
 }

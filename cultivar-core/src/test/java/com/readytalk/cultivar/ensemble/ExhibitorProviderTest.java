@@ -1,19 +1,21 @@
 package com.readytalk.cultivar.ensemble;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import java.util.Properties;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.readytalk.cultivar.util.PropertyReader;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExhibitorProviderTest {
@@ -26,32 +28,27 @@ public class ExhibitorProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        provider = new ExhibitorProvider(props, env);
+        provider = new ExhibitorProvider();
+    }
+
+    @After
+    public void tearDown() {
+        PropertyReader.reset();
     }
 
     @Test
-    public void get_PresentInPropertiesAndEnvironment_ReturnsProperties() {
-        when(props.getProperty(ExhibitorProvider.PROPERTY_NAME)).thenReturn("test");
-        env.put(ExhibitorProvider.ENVIRONMENT_NAME, "badvalue");
+    public void get_PresentInProperties_ReturnsProperties() {
+        PropertyReader.setProperties(ImmutableMap.of(ExhibitorProvider.PROPERTY_NAME, "test"));
 
         assertEquals(Optional.of("test"), provider.get());
     }
 
     @Test
     public void get_OverridenWithSetterAndPresentInPropertiesAndEnvironment_ReturnsOverride() {
-        when(props.getProperty(ExhibitorProvider.PROPERTY_NAME)).thenReturn("test");
-        env.put(ExhibitorProvider.ENVIRONMENT_NAME, "badvalue");
+        PropertyReader.setProperties(ImmutableMap.of(ExhibitorProvider.PROPERTY_NAME, "test"));
 
         provider.setDefault("conn");
 
         assertEquals(Optional.of("conn"), provider.get());
-    }
-
-    @Test
-    public void get_PresentInEnvironment_ReturnsEnvironment() {
-        when(props.getProperty(ExhibitorProvider.PROPERTY_NAME)).thenReturn(null);
-        env.put(ExhibitorProvider.ENVIRONMENT_NAME, "test");
-
-        assertEquals(Optional.of("test"), provider.get());
     }
 }

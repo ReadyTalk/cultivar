@@ -1,15 +1,11 @@
 package com.readytalk.cultivar.ensemble;
 
-import java.util.Map;
-import java.util.Properties;
-
-import com.readytalk.cultivar.internal.Private;
-
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
+import com.readytalk.cultivar.util.PropertyReader;
 
 /**
  * Provides the connection string based on either server properties or environment variables.
@@ -17,18 +13,12 @@ import com.google.inject.name.Named;
 @Beta
 class ConnectionProvider implements Provider<Optional<String>> {
 
-    static final String PROPERTY_NAME = "cultivar.zookeeper.connections";
-    static final String ENVIRONMENT_NAME = "CULTIVAR_ZOOKEEPER_CONNECTIONS";
-
-    private final Map<String, String> environment;
-    private final Properties properties;
+    static final String PROPERTY_NAME = "config.cultivar.zookeepers";
 
     private Optional<String> defaultValue = Optional.absent();
 
     @Inject
-    ConnectionProvider(@Private final Properties properties, @Private final Map<String, String> environment) {
-        this.environment = environment;
-        this.properties = properties;
+    ConnectionProvider() {
     }
 
     @Inject(optional = true)
@@ -39,8 +29,7 @@ class ConnectionProvider implements Provider<Optional<String>> {
     @Override
     public Optional<String> get() {
 
-        return defaultValue.or(Optional.fromNullable(properties.getProperty(PROPERTY_NAME))).or(
-                Optional.fromNullable(environment.get(ENVIRONMENT_NAME)));
+        return defaultValue.or(Optional.fromNullable(PropertyReader.getProperty(PROPERTY_NAME)));
 
     }
 }

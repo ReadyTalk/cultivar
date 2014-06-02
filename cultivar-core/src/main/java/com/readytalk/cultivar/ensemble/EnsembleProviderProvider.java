@@ -6,6 +6,11 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
+
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.ensemble.exhibitor.DefaultExhibitorRestClient;
@@ -14,11 +19,6 @@ import org.apache.curator.ensemble.exhibitor.ExhibitorRestClient;
 import org.apache.curator.ensemble.exhibitor.Exhibitors;
 import org.apache.curator.ensemble.fixed.FixedEnsembleProvider;
 import org.apache.curator.retry.RetryUntilElapsed;
-
-import com.google.common.base.Optional;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.name.Named;
 
 /**
  * Binds an ExhibitorEnsembleProvider if sufficient information is provided, otherwise provides a FixedEnsembleProvider.
@@ -69,12 +69,12 @@ class EnsembleProviderProvider implements Provider<EnsembleProvider> {
     }
 
     @Inject(optional = true)
-    public void setRestPath(@Named("Cultivar.properties.exhibitor.pollingTimeMillis") final int pollingTimeMillis) {
+    public void setPollingTimeMs(@Named("Cultivar.properties.exhibitor.pollingTimeMillis") final int pollingTimeMillis) {
         this.pollingTimeMs = pollingTimeMillis;
     }
 
     @Inject(optional = true)
-    public void setRestPath(@Named("Cultivar.properties.exhibitor.retryPolicy") final RetryPolicy retry) {
+    public void setRetryPolicy(@Named("Cultivar.properties.exhibitor.retryPolicy") final RetryPolicy retry) {
         this.retryPolicy = retry;
     }
 
