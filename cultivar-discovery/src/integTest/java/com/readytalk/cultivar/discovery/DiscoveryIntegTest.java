@@ -3,6 +3,8 @@ package com.readytalk.cultivar.discovery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.curator.RetryPolicy;
@@ -10,6 +12,7 @@ import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.ensemble.fixed.FixedEnsembleProvider;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.test.TestingZooKeeperServer;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceProvider;
@@ -18,12 +21,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import com.readytalk.cultivar.Cultivar;
-import com.readytalk.cultivar.CultivarStartStopManager;
-import com.readytalk.cultivar.Curator;
-import com.readytalk.cultivar.CuratorModule;
-import com.readytalk.cultivar.test.AbstractZookeeperClusterTest;
-import com.readytalk.cultivar.test.ConditionalWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.AbstractModule;
@@ -31,8 +30,15 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
+import com.readytalk.cultivar.Cultivar;
+import com.readytalk.cultivar.CultivarStartStopManager;
+import com.readytalk.cultivar.Curator;
+import com.readytalk.cultivar.CuratorModule;
+import com.readytalk.cultivar.test.AbstractZookeeperClusterTest;
+import com.readytalk.cultivar.test.ConditionalWait;
 
 public class DiscoveryIntegTest extends AbstractZookeeperClusterTest {
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryIntegTest.class);
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -78,7 +84,6 @@ public class DiscoveryIntegTest extends AbstractZookeeperClusterTest {
         }, Cultivar.class));
 
         manager = inj.getInstance(CultivarStartStopManager.class);
-
     }
 
     @After
@@ -139,6 +144,55 @@ public class DiscoveryIntegTest extends AbstractZookeeperClusterTest {
         assertEquals("Instance count does not match.", 2, provider.getAllInstances().size());
         assertTrue("Instances are not equal to services.",
                 provider.getAllInstances().containsAll(ImmutableSet.of(service1, service2)));
+
+    }
+
+    @Test
+    public void discoveryService_RegisteredInstance_ShutdownZK_ServicesPresentOnReconnect() throws Exception {
+        manager.startAsync().awaitRunning();
+
+        discovery.registerService(service1);
+
+        new ConditionalWait(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return provider.getAllInstances().size() == 1;
+            }
+        }).await();
+
+        List<TestingZooKeeperServer> specs = testingCluster.getServers();
+
+        for (TestingZooKeeperServer o : specs) {
+            o.kill();
+        }
+
+        new ConditionalWait(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                Collection<ServiceInstance<Void>> services = provider.getAllInstances();
+
+                for (ServiceInstance<Void> o : services) {
+                    provider.noteError(o);
+                }
+
+                return provider.getAllInstances().size() == 0;
+            }
+        }).await();
+
+        for (TestingZooKeeperServer o : specs) {
+            o.restart();
+        }
+
+        new ConditionalWait(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return provider.getAllInstances().size() == 1;
+            }
+        }).await();
+
+        assertEquals("Instance count does not match.", 1, provider.getAllInstances().size());
+        assertTrue("Instances are not equal to services.",
+                provider.getAllInstances().containsAll(ImmutableSet.of(service1)));
 
     }
 }

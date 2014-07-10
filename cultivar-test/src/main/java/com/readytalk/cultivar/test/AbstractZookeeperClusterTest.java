@@ -19,7 +19,7 @@ public abstract class AbstractZookeeperClusterTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractZookeeperClusterTest.class);
 
-    private static final long MAX_TEST_TIME_SECONDS = 30L;
+    private static final long MAX_TEST_TIME_SECONDS = 120L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractZookeeperClusterTest.class);
 
