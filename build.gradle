@@ -8,8 +8,11 @@ subprojects {
   
   defaultTasks 'build'
   
+  group = 'org.readytalk.cultivar'
+  version = '1.1.0-SNAPSHOT'
+  
   project.ext.libVersions = [
-    curator: "2.4.2",
+    curator: "2.5.0",
     slf4j: "1.7.7",
     logback: "1.1.2",
     findbugs: "2.0.3",
@@ -19,6 +22,16 @@ subprojects {
     guava: "17.0",
     mockito: "1.9.5",
   ]
+  
+  ext.sharedManifest = manifest {
+    attributes (
+      "Specification-Title": "Cultivar",
+      "Implementation-Title": "com.readytalk.cultivar",
+      "Specification-Version": version,
+      "Implementation-Version": "git describe --all --long --dirty".execute().in.text.trim(),
+      "Implementation-Vendor": "ReadyTalk"
+    )
+  }
   
   sourceSets {
     integTest {
@@ -38,9 +51,6 @@ subprojects {
   repositories {
     mavenCentral()
   }
-  
-  group = 'org.readytalk.cultivar'
-  version = '1.1.0-SNAPSHOT'
   
   dependencies {
     compile (
@@ -109,6 +119,12 @@ subprojects {
   
   tasks.withType(Compile) { 
     options.compilerArgs << "-Xlint:all" 
+  }
+  
+  jar {
+    manifest {
+      from sharedManifest
+    }
   }
 }
 
