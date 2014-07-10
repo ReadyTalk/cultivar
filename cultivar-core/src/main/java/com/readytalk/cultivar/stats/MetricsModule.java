@@ -1,5 +1,8 @@
 package com.readytalk.cultivar.stats;
 
+import org.apache.curator.drivers.TracerDriver;
+import org.apache.curator.framework.state.ConnectionStateListener;
+
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.Beta;
 import com.google.inject.AbstractModule;
@@ -7,9 +10,7 @@ import com.google.inject.PrivateModule;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
-
-import org.apache.curator.drivers.TracerDriver;
-import org.apache.curator.framework.state.ConnectionStateListener;
+import com.readytalk.cultivar.Curator;
 
 /**
  * Wires in a TracerDriver that is based around the codahale MetricRegistry and a listener to track the frequency of
@@ -37,9 +38,9 @@ public class MetricsModule extends AbstractModule {
 
                 bindConstant().annotatedWith(Names.named("Cultivar.Metrics.prefix")).to(prefix);
 
-                bind(TracerDriver.class).to(MetricsTracerDriver.class);
+                bind(TracerDriver.class).annotatedWith(Curator.class).to(MetricsTracerDriver.class);
 
-                expose(TracerDriver.class);
+                expose(TracerDriver.class).annotatedWith(Curator.class);
 
                 bind(ConnectionStateMetricsListener.class).in(Singleton.class);
 
