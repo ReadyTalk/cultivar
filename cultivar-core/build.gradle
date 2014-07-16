@@ -4,6 +4,7 @@ dependencies {
     "com.google.inject.extensions:guice-multibindings:${libVersions.guice}",
     "com.google.inject.extensions:guice-assistedinject:${libVersions.guice}",
     "com.codahale.metrics:metrics-core:${libVersions.metrics}",
+    "com.codahale.metrics:metrics-healthchecks:${libVersions.metrics}",
   )
   
   compile ("org.apache.curator:curator-recipes:${libVersions.curator}") {

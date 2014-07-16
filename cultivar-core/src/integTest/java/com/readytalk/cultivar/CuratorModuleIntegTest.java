@@ -16,6 +16,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.readytalk.cultivar.health.HealthCheckModule;
 import com.readytalk.cultivar.test.AbstractZookeeperClusterTest;
 
 public class CuratorModuleIntegTest extends AbstractZookeeperClusterTest {
@@ -31,9 +32,8 @@ public class CuratorModuleIntegTest extends AbstractZookeeperClusterTest {
                 bind(EnsembleProvider.class).annotatedWith(Curator.class).toInstance(
                         new FixedEnsembleProvider(testingCluster.getConnectString()));
                 bind(RetryPolicy.class).annotatedWith(Curator.class).toInstance(new ExponentialBackoffRetry(1000, 3));
-
             }
-        }));
+        }), new HealthCheckModule());
 
     }
 

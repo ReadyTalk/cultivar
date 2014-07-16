@@ -218,6 +218,6 @@ In no particular order:
  * Allow for multiple ZK instances.
  * Cleanly allow for differing namespaces.
  * Allow the use of bound objects instead of instances for things like `ProviderStrategy`.
- * Document various binding options, making it clearer how to configure instances.
+ * Create HealthCheck that returns unhealthy until the initial connection is established.
 
 Cultivar can still help with many of the "unsupported" use cases since it will already manage starting the relevant services, however, they can be made much easier and more automatic.
