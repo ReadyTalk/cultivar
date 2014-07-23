@@ -1,6 +1,10 @@
 package com.readytalk.cultivar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
@@ -12,10 +16,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.readytalk.cultivar.health.HealthCheckModule;
 import com.readytalk.cultivar.test.AbstractZookeeperClusterTest;
 
@@ -33,7 +41,25 @@ public class CuratorModuleIntegTest extends AbstractZookeeperClusterTest {
                         new FixedEnsembleProvider(testingCluster.getConnectString()));
                 bind(RetryPolicy.class).annotatedWith(Curator.class).toInstance(new ExponentialBackoffRetry(1000, 3));
             }
-        }), new HealthCheckModule());
+        }), new HealthCheckModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                // TODO: Method stub.
+
+            }
+
+            @Provides
+            @Singleton
+            public HealthCheckRegistry registry(final Map<String, HealthCheck> checks) {
+                HealthCheckRegistry registry = new HealthCheckRegistry();
+
+                for (Map.Entry<String, HealthCheck> o : checks.entrySet()) {
+                    registry.register(o.getKey(), o.getValue());
+                }
+
+                return registry;
+            }
+        });
 
     }
 
@@ -57,6 +83,22 @@ public class CuratorModuleIntegTest extends AbstractZookeeperClusterTest {
         manager.startAsync().awaitRunning();
 
         assertEquals(CuratorFrameworkState.STARTED, framework.getState());
+    }
+
+    @Test
+    public void afterStart_HealthCheck_IsHealthy() {
+        CultivarStartStopManager manager = inj.getInstance(CultivarStartStopManager.class);
+        HealthCheckRegistry registry = inj.getInstance(HealthCheckRegistry.class);
+
+        manager.startAsync().awaitRunning();
+
+        assertTrue("No healthchecks registered!", registry.getNames().size() > 0);
+
+        SortedMap<String, HealthCheck.Result> results = registry.runHealthChecks();
+
+        for (Map.Entry<String, HealthCheck.Result> o : results.entrySet()) {
+            assertTrue(o.getKey() + " returned unhealthy: " + String.valueOf(o.getValue()), o.getValue().isHealthy());
+        }
     }
 
     @Test

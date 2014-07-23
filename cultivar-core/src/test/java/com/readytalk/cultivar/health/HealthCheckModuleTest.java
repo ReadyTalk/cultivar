@@ -2,6 +2,7 @@ package com.readytalk.cultivar.health;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.curator.RetryPolicy;
@@ -42,7 +43,7 @@ public class HealthCheckModuleTest {
                         bind(RetryPolicy.class).annotatedWith(Curator.class).toInstance(
                                 new ExponentialBackoffRetry(1000, 3));
                     }
-                })).getInstance(Key.get(new TypeLiteral<Set<HealthCheck>>() {
+                })).getInstance(Key.get(new TypeLiteral<Map<String, HealthCheck>>() {
                 })).size());
     }
 
