@@ -44,7 +44,7 @@ public class CuratorModuleIntegTest extends AbstractZookeeperClusterTest {
         }), new HealthCheckModule(), new AbstractModule() {
             @Override
             protected void configure() {
-                // TODO: Method stub.
+                
 
             }
 
