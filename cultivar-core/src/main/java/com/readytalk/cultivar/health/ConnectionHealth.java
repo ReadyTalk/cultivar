@@ -39,7 +39,7 @@ public class ConnectionHealth extends HealthCheck {
 
         Stopwatch timer = Stopwatch.createStarted();
 
-        Stat result = framework.checkExists().forPath("/");
+        Stat result = framework.usingNamespace(null).checkExists().forPath("/");
 
         timer.stop();
 
