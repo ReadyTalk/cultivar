@@ -18,7 +18,12 @@ import org.junit.Test;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.readytalk.cultivar.health.HealthCheckModule;
 import com.readytalk.cultivar.test.AbstractZookeeperClusterTest;
