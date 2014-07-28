@@ -3,6 +3,7 @@ package com.readytalk.cultivar.health;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.when;
 
 import org.apache.curator.framework.CuratorFramework;
@@ -12,6 +13,7 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -33,6 +35,8 @@ public class ConnectionHealthTest {
     public void setUp() throws Exception {
 
         when(framework.checkExists()).thenReturn(existsBuilder);
+
+        when(framework.usingNamespace(isNull(String.class))).thenReturn(framework);
 
         test = new ConnectionHealth(framework);
     }
