@@ -11,6 +11,17 @@ Curator is in many ways a great framework, but it is rather unopinionated about 
  * You are using Guice or can at least figure out how to strap a few Guice modules into your application lifecycle.
  * You know what Curator objects you will need around the time your application starts up (this will change in the future as an absolute requirement, but is still going to be the primary method of using Cultivar).
  * Your use cases in how you access services are relatively homogenous (so if you access service A using a round-robin strategy from Service X you will probably use a round robin strategy from Service Y as well) and you want the ability to share these practices in the form of a client library.
+ 
+Philosophy
+----------
+
+Core principles behind using Cultivar:
+
+* Builders are used for constructing Guice Modules that inject specific objects.
+* Construction of objects is, to the degree that it is reasonable, *fail-fast*. If Cultivar knows that a value should not be `null`, it will try to tell you that when you set the value, rather than at the time the `Module` is built. If something is required for a `Module` to be constructed, it will try to tell you at the time the `Module` is constructed, rather than at the time the Injector is built, etc. 
+* The lifecycle of most objects in the most common use cases is to spin everything up at approximately the same time when the application starts, then to tear it down when the application is shut down.
+* Modules should be *reusable* between applications using a client library.  
+* In the general case, you are using Curator objects directly or using encapsulation, rather than inheritance. 
 
 Building and Testing
 --------------------
@@ -219,5 +230,6 @@ In no particular order:
  * Cleanly allow for differing namespaces.
  * Allow the use of bound objects instead of instances for things like `ProviderStrategy`.
  * Create HealthCheck that returns unhealthy until the initial connection is established.
+ * Switch from `Preconditions` to `Verification` where appropriate. 
 
 Cultivar can still help with many of the "unsupported" use cases since it will already manage starting the relevant services, however, they can be made much easier and more automatic.
