@@ -8,6 +8,9 @@ subprojects {
   
   defaultTasks 'build'
   
+  sourceCompatibility = 1.6
+  targetCompatibility = 1.6
+  
   group = 'org.readytalk.cultivar'
   version = '1.2.0-SNAPSHOT'
   
