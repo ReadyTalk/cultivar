@@ -104,7 +104,8 @@ subprojects {
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
   
-    testReportDir = file("$buildDir/reports/integTests")
+    reports.junitXml.destination = file("$buildDir/reports/integTests")
+    reports.html.destination = file("$buildDir/reports/integTests")
   
     jacoco {
       destinationFile = file("$buildDir/jacoco/test.exec")
@@ -120,7 +121,7 @@ subprojects {
   
   jacocoTestReport.mustRunAfter integTest
   
-  tasks.withType(Compile) { 
+  tasks.withType(JavaCompile) { 
     options.compilerArgs << "-Xlint:all" 
   }
   
@@ -132,5 +133,5 @@ subprojects {
 }
 
 wrapper {
-  gradleVersion '1.11'
+  gradleVersion '2.0'
 }
