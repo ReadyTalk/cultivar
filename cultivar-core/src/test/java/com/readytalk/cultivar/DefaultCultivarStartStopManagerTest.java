@@ -60,7 +60,7 @@ public class DefaultCultivarStartStopManagerTest {
 
             @Override
             protected Executor executor() {
-                return MoreExecutors.sameThreadExecutor();
+                return MoreExecutors.directExecutor();
             }
         };
 
