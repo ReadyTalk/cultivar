@@ -2,7 +2,9 @@ package com.readytalk.cultivar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Executor;
 
