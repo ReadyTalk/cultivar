@@ -2,9 +2,7 @@ package com.readytalk.cultivar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.Executor;
 
@@ -60,7 +58,7 @@ public class DefaultCultivarStartStopManagerTest {
 
             @Override
             protected Executor executor() {
-                return MoreExecutors.sameThreadExecutor();
+                return MoreExecutors.directExecutor();
             }
         };
 

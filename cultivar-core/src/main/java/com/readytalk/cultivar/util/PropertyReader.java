@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -48,7 +48,7 @@ public final class PropertyReader {
      * @return The property if present, else the default specified value.
      */
     public static String getProperty(final String key, final String def) {
-        return Objects.firstNonNull(getProperty(key), def);
+        return MoreObjects.firstNonNull(getProperty(key), def);
     }
 
     @VisibleForTesting
