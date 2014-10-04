@@ -49,7 +49,17 @@ public abstract class AbstractZookeeperClusterTest {
     };
 
     @Rule
-    public final Timeout timeout = new Timeout((int) TimeUnit.SECONDS.toMillis(MAX_TEST_TIME_SECONDS));
+    public final Timeout timeout;
 
-    protected final TestingCluster testingCluster = new TestingCluster(CLUSTER_SIZE);
+    protected final TestingCluster testingCluster;
+
+    public AbstractZookeeperClusterTest() {
+        this(CLUSTER_SIZE, MAX_TEST_TIME_SECONDS, TimeUnit.SECONDS);
+    }
+
+    public AbstractZookeeperClusterTest(final int clusterSize, final long testTime, final TimeUnit unit) {
+
+        timeout = new Timeout((int) unit.toMillis(testTime));
+        testingCluster = new TestingCluster(clusterSize);
+    }
 }

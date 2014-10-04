@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
@@ -17,6 +18,7 @@ import com.google.common.collect.Maps;
  * Names are translated between environment and system properties by turning them lower case and substituting "_" for
  * "."
  */
+@Beta
 @ThreadSafe
 public final class PropertyReader {
 
