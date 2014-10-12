@@ -20,6 +20,9 @@ import com.readytalk.cultivar.Curator;
 import com.readytalk.cultivar.internal.AnnotationHolder;
 import com.readytalk.cultivar.internal.Private;
 
+/**
+ * Constructs a namespaced CuratorFramework with a given namespace and binds it to a target annotation.
+ */
 @NotThreadSafe
 @Beta
 public class NamespaceModuleBuilder {
