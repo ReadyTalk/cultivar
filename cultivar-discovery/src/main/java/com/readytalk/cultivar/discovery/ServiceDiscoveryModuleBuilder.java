@@ -7,15 +7,11 @@ import java.lang.annotation.Annotation;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.readytalk.cultivar.internal.AnnotationHolder;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceProviderBuilder;
 import org.apache.curator.x.discovery.details.InstanceSerializer;
-import com.readytalk.cultivar.Curator;
-import com.readytalk.cultivar.CuratorService;
-import com.readytalk.cultivar.internal.Private;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
@@ -27,6 +23,11 @@ import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.google.inject.util.Types;
+import com.readytalk.cultivar.AbstractModuleBuilder;
+import com.readytalk.cultivar.Curator;
+import com.readytalk.cultivar.CuratorService;
+import com.readytalk.cultivar.internal.AnnotationHolder;
+import com.readytalk.cultivar.internal.Private;
 
 /**
  * Constructs a module that binds a ServiceDiscovery instance to a particular annotation. This is done to allow for one
@@ -36,7 +37,7 @@ import com.google.inject.util.Types;
 @Beta
 @NotThreadSafe
 @SuppressWarnings("unchecked")
-public class ServiceDiscoveryModuleBuilder<T> {
+public class ServiceDiscoveryModuleBuilder<T> extends AbstractModuleBuilder<ServiceDiscoveryModuleBuilder<T>> {
 
     private final Class<T> payloadClass;
 
@@ -125,6 +126,8 @@ public class ServiceDiscoveryModuleBuilder<T> {
                 install(new PrivateModule() {
                     @Override
                     protected void configure() {
+                        ServiceDiscoveryModuleBuilder.this.bindFramework(binder());
+
                         bind(builderKey()).toInstance(ServiceDiscoveryBuilder.builder(payloadClass));
 
                         bind(privateDiscoveryKey()).toProvider(providerKey()).in(Singleton.class);
