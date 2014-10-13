@@ -4,6 +4,10 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.curator.framework.api.CuratorListener;
+import org.apache.curator.framework.api.UnhandledErrorListener;
+import org.apache.curator.framework.state.ConnectionStateListener;
+
 import com.google.common.annotations.Beta;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
@@ -13,10 +17,6 @@ import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.readytalk.cultivar.barriers.BarrierModule;
 import com.readytalk.cultivar.connection.LastKnownStateModule;
-
-import org.apache.curator.framework.api.CuratorListener;
-import org.apache.curator.framework.api.UnhandledErrorListener;
-import org.apache.curator.framework.state.ConnectionStateListener;
 
 /**
  * The method for creating the Curator instance.

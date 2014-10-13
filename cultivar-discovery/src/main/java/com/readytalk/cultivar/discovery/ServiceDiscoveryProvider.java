@@ -6,12 +6,12 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.details.InstanceSerializer;
-import com.readytalk.cultivar.Curator;
 
 import com.google.common.annotations.Beta;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
+import com.readytalk.cultivar.internal.Private;
 
 /**
  * Creates a ServiceDiscovery instance.
@@ -28,7 +28,7 @@ class ServiceDiscoveryProvider<T> implements Provider<ServiceDiscovery<T>> {
     }
 
     @Inject
-    public void setClient(@Curator final CuratorFramework framework) {
+    public void setClient(@Private final CuratorFramework framework) {
         this.builder.client(framework);
     }
 

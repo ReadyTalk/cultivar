@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.readytalk.cultivar.AbstractModuleBuilder;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 
 import com.google.inject.AbstractModule;
@@ -24,7 +25,7 @@ import com.readytalk.cultivar.util.mapping.ByteArrayMapper;
 import com.readytalk.cultivar.util.mapping.NOPByteArrayMapper;
 
 @NotThreadSafe
-public class NodeContainerModuleBuilder<T> {
+public class NodeContainerModuleBuilder<T> extends AbstractModuleBuilder<NodeContainerModuleBuilder<T>> {
 
     private final Class<T> objectType;
     private boolean compressed = false;
@@ -93,6 +94,8 @@ public class NodeContainerModuleBuilder<T> {
                 install(new PrivateModule() {
                     @Override
                     protected void configure() {
+                        NodeContainerModuleBuilder.this.bindFramework(binder());
+
                         bind(NodeCache.class).annotatedWith(Private.class).toProvider(NodeCacheProvider.class)
                                 .in(Singleton.class);
                         bindConstant().annotatedWith(Names.named("Cultivar.cache.path")).to(path);

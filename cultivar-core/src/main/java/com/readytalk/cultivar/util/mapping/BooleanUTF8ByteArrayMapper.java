@@ -2,9 +2,11 @@ package com.readytalk.cultivar.util.mapping;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Charsets;
 import com.google.inject.Inject;
 
+@Beta
 public class BooleanUTF8ByteArrayMapper extends AbstractByteArrayMapper<Boolean> {
     @Inject
     public BooleanUTF8ByteArrayMapper() {
