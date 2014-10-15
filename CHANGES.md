@@ -5,13 +5,14 @@ Changelog
 -----
 
 * Set license as Apache.
-* Build changes.
+* Build changes (Issue #11, Issue #25).
 
 1.3.0
 -----
 
-* Upgraded dependencies.
-* Added namespaces. 
+* Upgraded dependencies (Issue #25).
+* Added namespaces (Issue #31). 
 * Added CuratorUninterruptibles.
-* Parameterized AbstractZookeeperClusterTest.
+* Parameterized AbstractZookeeperClusterTest (Issue #23).
 * Minor documentation fixes.
+* Easier registration for discovery (Issue #10).
