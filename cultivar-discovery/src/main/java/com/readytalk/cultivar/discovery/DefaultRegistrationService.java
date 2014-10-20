@@ -1,13 +1,17 @@
 package com.readytalk.cultivar.discovery;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Verify.verifyNotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.Atomics;
 import com.google.inject.Inject;
@@ -22,9 +26,12 @@ import com.readytalk.cultivar.internal.Private;
  */
 class DefaultRegistrationService<T> extends AbstractIdleService implements RegistrationService<T> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultRegistrationService.class);
+
     private final ServiceDiscovery<T> discovery;
     private final Provider<ServiceInstance<T>> provider;
 
+    @GuardedBy("this")
     private final AtomicReference<ServiceInstance<T>> instance = Atomics.newReference();
 
     @Inject
@@ -35,23 +42,42 @@ class DefaultRegistrationService<T> extends AbstractIdleService implements Regis
     }
 
     @Override
-    protected void startUp() throws Exception {
+    protected synchronized void startUp() throws Exception {
 
+        register();
+
+    }
+
+    @Override
+    protected synchronized void shutDown() throws Exception {
+        unregister();
+    }
+
+    @VisibleForTesting
+    synchronized void register() throws Exception {
         ServiceInstance<T> service = provider.get();
 
         checkState(service != null, "Null providers are not accepted.");
 
-        instance.set(provider.get());
+        if (instance.compareAndSet(null, service)) {
+            LOG.debug("Registering service: {}", service);
 
-        discovery.registerService(instance.get());
+            discovery.registerService(service);
+        } else {
+            LOG.warn("Service already registered! {}", service);
+        }
     }
 
-    @Override
-    protected void shutDown() throws Exception {
+    @VisibleForTesting
+    synchronized void unregister() throws Exception {
         ServiceInstance<T> service = instance.getAndSet(null);
 
-        verifyNotNull(service, "Service has not been set. Should never happen.");
+        if (service != null) {
+            LOG.debug("Unregistering service: {}", service);
 
-        discovery.unregisterService(service);
+            discovery.unregisterService(service);
+        } else {
+            LOG.debug("No service to unregister.");
+        }
     }
 }

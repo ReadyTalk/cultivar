@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Executor;
@@ -34,9 +37,17 @@ public class DefaultCultivarStartStopManagerTest {
     private Logger logger;
 
     @Mock
+    private Logger extraLogger1;
+
+    @Mock
+    private Logger extraLogger2;
+
+    @Mock
     private CuratorManagementService curatorManagementService;
 
     private ServiceManager serviceManager;
+
+    private ServiceManager extraServiceManager1;
 
     private DefaultCultivarStartStopManager startStopManager;
 
@@ -64,12 +75,53 @@ public class DefaultCultivarStartStopManagerTest {
             }
         };
 
+        Service extraService1 = new AbstractIdleService() {
+            @Override
+            protected void startUp() throws Exception {
+                extraLogger1.info("startUp");
+
+            }
+
+            @Override
+            protected void shutDown() throws Exception {
+                extraLogger1.info("shutDown");
+            }
+
+            @Override
+            protected Executor executor() {
+                return MoreExecutors.directExecutor();
+            }
+        };
+
+        Service extraService2 = new AbstractIdleService() {
+            @Override
+            protected void startUp() throws Exception {
+                extraLogger2.info("startUp");
+
+            }
+
+            @Override
+            protected void shutDown() throws Exception {
+                extraLogger2.info("shutDown");
+            }
+
+            @Override
+            protected Executor executor() {
+                return MoreExecutors.directExecutor();
+            }
+        };
+
         serviceManager = new ServiceManager(ImmutableSet.of(service));
+
+        extraServiceManager1 = new ServiceManager(ImmutableSet.of(extraService1));
+
+        ServiceManager extraServiceManager2 = new ServiceManager(ImmutableSet.of(extraService2));
 
         when(curatorManagementService.startAsync()).thenReturn(curatorManagementService);
         when(curatorManagementService.stopAsync()).thenReturn(curatorManagementService);
 
-        startStopManager = new DefaultCultivarStartStopManager(curatorManagementService, serviceManager);
+        startStopManager = new DefaultCultivarStartStopManager(curatorManagementService, serviceManager,
+                ImmutableSet.of(extraServiceManager1, extraServiceManager2));
     }
 
     @Test
@@ -189,5 +241,75 @@ public class DefaultCultivarStartStopManagerTest {
 
         order.verify(logger).info("shutDown");
         order.verify(curatorManagementService).stopAsync();
+    }
+
+    @Test
+    public void startUp_StartsServicesThenExtraServices() throws Exception {
+        startStopManager.startUp();
+
+        InOrder order = inOrder(logger, extraLogger1);
+        order.verify(logger).info("startUp");
+        order.verify(extraLogger1).info("startUp");
+    }
+
+    @Test
+    public void shutDown_StopsExtraServicesThenServices() throws Exception {
+        startStopManager.startUp();
+
+        startStopManager.shutDown();
+
+        InOrder order = inOrder(logger, extraLogger1);
+
+        order.verify(extraLogger1).info("shutDown");
+        order.verify(logger).info("shutDown");
+    }
+
+    @Test
+    public void startUp_ExceptionInExtraServiceStartAsync_Continues() throws Exception {
+        extraServiceManager1.startAsync().awaitHealthy();
+
+        reset(extraLogger1);
+
+        startStopManager.startUp();
+
+        verify(extraLogger1, never()).info("startUp");
+        verify(extraLogger2).info("startUp");
+
+    }
+
+    @Test
+    public void startUp_ExceptionInExtraService_Continues() throws Exception {
+        doThrow(new RuntimeException()).when(extraLogger1).info("startUp");
+
+        startStopManager.startUp();
+
+        verify(extraLogger2).info("startUp");
+    }
+
+    @Test
+    public void shutDown_ExceptionInExtraServiceStopAsync_Continues() throws Exception {
+        startStopManager.startUp();
+
+        extraServiceManager1.stopAsync().awaitStopped();
+
+        reset(extraLogger1);
+
+        startStopManager.shutDown();
+
+        verify(extraLogger1, never()).info("shutDown");
+        verify(extraLogger2).info("shutDown");
+
+    }
+
+    @Test
+    public void shutDown_ExceptionInExtraService_Continues() throws Exception {
+        doThrow(new RuntimeException()).when(extraLogger1).info("shutDown");
+
+        startStopManager.startUp();
+
+        startStopManager.shutDown();
+
+        verify(extraLogger2).info("shutDown");
+        verify(logger).info("shutDown");
     }
 }

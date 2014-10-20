@@ -1,7 +1,7 @@
 Cultivar
 ========
 
-Cultivar is a lifecycle manager around [Curator](http://curator.apache.org) using [Guice](https://code.google.com/p/google-guice/) and [Guava](https://code.google.com/p/guava-libraries/). It is mostly an excuse for me to learn Zookeeper and Curator by trying to think through how to build a generic lifecycle system around it.
+Cultivar is a lifecycle manager built around [Curator](http://curator.apache.org) using [Guice](https://code.google.com/p/google-guice/) and [Guava](https://code.google.com/p/guava-libraries/).
 
 What is Cultivar?
 -----------------
@@ -22,6 +22,13 @@ Core principles behind using Cultivar:
 * The lifecycle of most objects in the most common use cases is to spin everything up at approximately the same time when the application starts, then to tear it down when the application is shut down.
 * Modules should be *reusable* between applications using a client library.  
 * In the general case, you are using Curator objects directly or using encapsulation, rather than inheritance. 
+* While it is possible to do otherwise, for the most part your objects should be *configured* **then** *initialized* rather than combining those into a single step.  Requiring information out of ZK or out of a database in order to instantiate parts of your system requires a little extra care. 
+
+What Cultivar Isn't
+--------------------
+
+ * A replacement for Curator. For the most part it provides Curator objects and interfaces directly to the developer.
+ * A wrapper for Curator. For the most part it doesn't decorate Curator's behavior, mostly configuring it using the same strategies and objects that Curator itself uses. 
 
 Building and Testing
 --------------------
@@ -161,7 +168,26 @@ ServiceInstance<DiscoveryType> service = ServiceInstance.<DiscoveryType> builder
 discovery.registerService(service1);
 ```
 
-This can be done for you with `RegistrationServiceModuleBuilder` and `RegistrationModule` and then calling `startAsync` on the `ServiceManager` annotated with `@Discovery`.
+This can be done for you with `RegistrationServiceModuleBuilder` and `RegistrationModule`:
+
+```java
+new RegistrationModule(),
+RegistrationServiceModuleBuilder.create().discoveryAnnotation(Curator.class)
+        .targetAnnotation(Curator.class).provider(Providers.of(service1)).build(),
+RegistrationServiceModuleBuilder
+		.create()
+		.discoveryAnnotation(Curator.class)
+		.targetAnnotation(Cultivar.class)
+		.provider(Providers.of(service2))
+		.updating(
+				10,
+				TimeUnit.SECONDS,
+				MoreExecutors.getExitingScheduledExecutorService(new ScheduledThreadPoolExecutor(1),
+						10, TimeUnit.MILLISECONDS)).build()
+```
+
+The `RegistrationModule` will make sure that these are started automatically by the `CultivarStartStopManager`.
+
 
 ### Client
 
@@ -190,19 +216,7 @@ inj = Guice.createInjector(
                 new RegistrationModule(),
                 ServiceDiscoveryModuleBuilder.create().annotation(Curator.class).basePath("/discovery").build(),
                 ServiceProviderModuleBuilder.create(Void.class).name("service").discovery(Curator.class)
-                        .annotation(Cultivar.class).build(),
-                RegistrationServiceModuleBuilder.create().discoveryAnnotation(Curator.class)
-                        .targetAnnotation(Curator.class).provider(Providers.of(service1)).build(),
-                RegistrationServiceModuleBuilder
-                        .create()
-                        .discoveryAnnotation(Curator.class)
-                        .targetAnnotation(Cultivar.class)
-                        .provider(Providers.of(service2))
-                        .updating(
-                                10,
-                                TimeUnit.SECONDS,
-                                MoreExecutors.getExitingScheduledExecutorService(new ScheduledThreadPoolExecutor(1),
-                                        10, TimeUnit.MILLISECONDS)).build());
+                        .annotation(Cultivar.class).build());
 
 // [...]
 
@@ -214,11 +228,9 @@ inj.getInstance(Key.get(ServiceManager.class, Discovery.class)).startAsync().awa
 Then when finished:
 
 ```
-try {
-    registrationManager.stopAsync().awaitStopped();
-} finally {
-    cultivarManager.stopAsync().awaitTerminated();
-}
+
+	cultivarManager.stopAsync().awaitTerminated();
+
 ```
 
 Note that both the client and the server may specify multiple annotations to cover several different services.
