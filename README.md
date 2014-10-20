@@ -38,7 +38,6 @@ This will:
  * Run the integration tests.
  * Put together code quality and code coverage reports.
 
-
 General Usage
 -------------
 
@@ -162,6 +161,8 @@ ServiceInstance<DiscoveryType> service = ServiceInstance.<DiscoveryType> builder
 discovery.registerService(service1);
 ```
 
+This can be done for you with `RegistrationServiceModuleBuilder` and `RegistrationModule` and then calling `startAsync` on the `ServiceManager` annotated with `@Discovery`.
+
 ### Client
 
 ```java
@@ -177,7 +178,48 @@ public class DiscoveryClientModule extends AbstractModule {
 }
 ```
 
-Any server that implements the client library is then responsible for installing the `DiscoveryClientModule` and starting Cultivar.
+Any server that implements the client library is then responsible for installing the `DiscoveryClientModule` and starting Cultivar:
+
+```java
+service1 = ServiceInstance.<Void> builder().id(UUID.randomUUID().toString()).name("service").build();
+
+service2 = ServiceInstance.<Void> builder().id(UUID.randomUUID().toString()).name("service").build();
+
+inj = Guice.createInjector(
+                // [...]
+                new RegistrationModule(),
+                ServiceDiscoveryModuleBuilder.create().annotation(Curator.class).basePath("/discovery").build(),
+                ServiceProviderModuleBuilder.create(Void.class).name("service").discovery(Curator.class)
+                        .annotation(Cultivar.class).build(),
+                RegistrationServiceModuleBuilder.create().discoveryAnnotation(Curator.class)
+                        .targetAnnotation(Curator.class).provider(Providers.of(service1)).build(),
+                RegistrationServiceModuleBuilder
+                        .create()
+                        .discoveryAnnotation(Curator.class)
+                        .targetAnnotation(Cultivar.class)
+                        .provider(Providers.of(service2))
+                        .updating(
+                                10,
+                                TimeUnit.SECONDS,
+                                MoreExecutors.getExitingScheduledExecutorService(new ScheduledThreadPoolExecutor(1),
+                                        10, TimeUnit.MILLISECONDS)).build());
+
+// [...]
+
+inj.getInstance(CultivarStartStopManager.class).startAsync().awaitRunning();
+
+inj.getInstance(Key.get(ServiceManager.class, Discovery.class)).startAsync().awaitHealthy();
+```
+
+Then when finished:
+
+```
+try {
+    registrationManager.stopAsync().awaitStopped();
+} finally {
+    cultivarManager.stopAsync().awaitTerminated();
+}
+```
 
 Note that both the client and the server may specify multiple annotations to cover several different services.
 
