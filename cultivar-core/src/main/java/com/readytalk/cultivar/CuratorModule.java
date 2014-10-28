@@ -67,6 +67,8 @@ public class CuratorModule extends AbstractModule {
 
         Multibinder.newSetBinder(binder(), CuratorListener.class);
 
+        Multibinder.newSetBinder(binder(), ServiceManager.class, Cultivar.class);
+
         Multibinder<ConnectionStateListener> connectionStateListeners = Multibinder.newSetBinder(binder(),
                 ConnectionStateListener.class);
 

@@ -18,8 +18,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ServiceManager;
@@ -51,8 +49,6 @@ public class RegistrationIntegTest extends AbstractZookeeperClusterTest {
     private ServiceProvider<Void> provider;
 
     private CultivarStartStopManager manager;
-
-    private ServiceManager registrationManager;
 
     @Before
     public void setUp() throws Exception {
@@ -95,14 +91,12 @@ public class RegistrationIntegTest extends AbstractZookeeperClusterTest {
                                 MoreExecutors.getExitingScheduledExecutorService(new ScheduledThreadPoolExecutor(1),
                                         10, TimeUnit.MILLISECONDS)).build());
 
-        registrationManager = inj.getInstance(Key.get(ServiceManager.class, Discovery.class));
+        ServiceManager registrationManager = inj.getInstance(Key.get(ServiceManager.class, Discovery.class));
 
         provider = inj.getInstance(Key.get(new TypeLiteral<ServiceProvider<Void>>() {
         }, Cultivar.class));
 
         manager = inj.getInstance(CultivarStartStopManager.class);
-
-        manager.startAsync().awaitRunning();
 
     }
 
@@ -117,17 +111,13 @@ public class RegistrationIntegTest extends AbstractZookeeperClusterTest {
 
     @After
     public void tearDown() throws Exception {
-        try {
-            registrationManager.stopAsync().awaitStopped();
-        } finally {
+        manager.stopAsync().awaitTerminated();
 
-            inj.getInstance(CultivarStartStopManager.class).stopAsync().awaitTerminated();
-        }
     }
 
     @Test
     public void provider_bothInstancesPopulated() throws Exception {
-        registrationManager.startAsync().awaitHealthy();
+        manager.startAsync().awaitRunning();
 
         awaitPopulation();
 

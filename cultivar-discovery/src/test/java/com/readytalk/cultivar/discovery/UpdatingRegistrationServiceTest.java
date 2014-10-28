@@ -3,9 +3,11 @@ package com.readytalk.cultivar.discovery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -52,6 +54,7 @@ public class UpdatingRegistrationServiceTest {
     public void setUp() {
         service = new UpdatingRegistrationService<Void>(discovery, Providers.of(instance), scheduler, executorService,
                 log);
+
     }
 
     @After
@@ -89,15 +92,55 @@ public class UpdatingRegistrationServiceTest {
     }
 
     @Test
-    public void runOneIteration_NoExceptions_UpdatesDiscovery() throws Exception {
+    public void runOneIteration_NotRegistered_DoesNothing() throws Exception {
+        service.runOneIteration();
+
+        verifyZeroInteractions(discovery);
+    }
+
+    @Test
+    public void startUp_ThenUpdate_AllowsUpdate() throws Exception {
+        service.startUp();
+
         service.runOneIteration();
 
         verify(discovery).updateService(instance);
     }
 
     @Test
-    public void runOneIteration_ExceptionInDiscovery_LogsException() throws Exception {
+    public void register_ServiceAlreadyRegistered_LogsWarning() throws Exception {
+        service.setRegistered(true);
+
+        service.register();
+
+        verify(log).warn(anyString(), anyObject());
+    }
+
+    @Test
+    public void unregister_AllowsRegistration() throws Exception {
+        service.setRegistered(true);
+
+        service.unregister();
+
+        service.register();
+
+        verify(discovery).registerService(instance);
+    }
+
+    @Test
+    public void runOneIteration_Registered_NoExceptions_UpdatesDiscovery() throws Exception {
+        service.setRegistered(true);
+
+        service.runOneIteration();
+
+        verify(discovery).updateService(instance);
+    }
+
+    @Test
+    public void runOneIteration_Registered_ExceptionInDiscovery_LogsException() throws Exception {
         doThrow(Exception.class).when(discovery).updateService(instance);
+
+        service.setRegistered(true);
 
         service.runOneIteration();
 
@@ -105,8 +148,10 @@ public class UpdatingRegistrationServiceTest {
     }
 
     @Test
-    public void runOneIteration_InterruptedExceptionInDiscovery_SetsInterruptFlag() throws Exception {
+    public void runOneIteration_Registered_InterruptedExceptionInDiscovery_SetsInterruptFlag() throws Exception {
         doThrow(InterruptedException.class).when(discovery).updateService(instance);
+
+        service.setRegistered(true);
 
         service.runOneIteration();
 
@@ -114,9 +159,13 @@ public class UpdatingRegistrationServiceTest {
     }
 
     @Test
-    public void runOneIteration_NullFromProvider_LogsVerifyException() throws Exception {
-        new UpdatingRegistrationService<Void>(discovery, Providers.<ServiceInstance<Void>> of(null), scheduler,
-                executorService, log).runOneIteration();
+    public void runOneIteration_Registered_NullFromProvider_LogsVerifyException() throws Exception {
+        UpdatingRegistrationService<Void> nullProviderService = new UpdatingRegistrationService<Void>(discovery,
+                Providers.<ServiceInstance<Void>> of(null), scheduler, executorService, log);
+
+        nullProviderService.setRegistered(true);
+
+        nullProviderService.runOneIteration();
 
         verify(log).warn(anyString(), any(VerifyException.class));
     }

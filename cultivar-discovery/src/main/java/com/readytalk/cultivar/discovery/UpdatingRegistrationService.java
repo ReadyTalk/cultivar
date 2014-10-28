@@ -4,12 +4,16 @@ import static com.google.common.base.Verify.verifyNotNull;
 
 import java.util.concurrent.ScheduledExecutorService;
 
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -24,6 +28,7 @@ import com.readytalk.cultivar.internal.Private;
  *            The type of payload for discovery.
  */
 @Beta
+@ThreadSafe
 class UpdatingRegistrationService<T> extends AbstractScheduledService implements RegistrationService<T> {
 
     private final Logger log;
@@ -33,6 +38,9 @@ class UpdatingRegistrationService<T> extends AbstractScheduledService implements
 
     private final Scheduler scheduler;
     private final ScheduledExecutorService executorService;
+
+    @GuardedBy("this")
+    private boolean registered = false;
 
     @Inject
     UpdatingRegistrationService(@Private final ServiceDiscovery<T> discovery,
@@ -56,14 +64,14 @@ class UpdatingRegistrationService<T> extends AbstractScheduledService implements
     }
 
     @Override
-    protected void startUp() throws Exception {
+    protected synchronized void startUp() throws Exception {
 
-        discovery.registerService(verifyNotNull(provider.get(), "Provider should not return null."));
+        register();
     }
 
     @Override
-    protected void shutDown() throws Exception {
-        discovery.unregisterService(provider.get());
+    protected synchronized void shutDown() throws Exception {
+        unregister();
     }
 
     @Override
@@ -72,23 +80,59 @@ class UpdatingRegistrationService<T> extends AbstractScheduledService implements
     }
 
     @Override
-    protected void runOneIteration() throws Exception {
+    protected synchronized void runOneIteration() throws Exception {
 
-        ServiceInstance<T> instance = null;
-        try {
-            instance = verifyNotNull(provider.get());
+        if (registered) {
+            ServiceInstance<T> instance = null;
+            try {
+                instance = verifyNotNull(provider.get());
 
-            discovery.updateService(instance);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            log.warn("Interrupted for service: " + String.valueOf(instance), ex);
-        } catch (Exception ex) {
-            log.warn("Exception while updating service: " + String.valueOf(instance), ex);
+                log.trace("Updating service: {}", instance);
+
+                discovery.updateService(instance);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                log.warn("Interrupted for service: " + String.valueOf(instance), ex);
+            } catch (Exception ex) {
+                log.warn("Exception while updating service: " + String.valueOf(instance), ex);
+            }
         }
     }
 
     @Override
     protected ScheduledExecutorService executor() {
         return this.executorService;
+    }
+
+    @VisibleForTesting
+    synchronized void register() throws Exception {
+
+        if (!registered) {
+            ServiceInstance<T> service = provider.get();
+
+            log.debug("Registering service: {}", service);
+
+            discovery.registerService(verifyNotNull(service, "Provider should not return null."));
+
+            registered = true;
+        } else {
+            log.warn("Service is already registered: {}", provider.get());
+        }
+    }
+
+    @VisibleForTesting
+    synchronized void unregister() throws Exception {
+        ServiceInstance<T> service = provider.get();
+
+        log.debug("Unregistering service: {}", service);
+
+        discovery.unregisterService(service);
+
+        registered = false;
+    }
+
+    @VisibleForTesting
+    synchronized void setRegistered(final boolean value) {
+        registered = value;
     }
 }

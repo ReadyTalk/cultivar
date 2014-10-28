@@ -16,3 +16,6 @@ Changelog
 * Parameterized AbstractZookeeperClusterTest (Issue #23).
 * Minor documentation fixes.
 * Easier registration for discovery (Issue #10).
+* Improved logging.
+* Improved documentation.
+* Easier unregistration/shutdown using either `java.lang.Runtime` shutdown hooks or customized shutdown systems (Issue #20).
