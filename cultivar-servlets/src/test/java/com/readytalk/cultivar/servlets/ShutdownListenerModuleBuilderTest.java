@@ -16,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.Module;
 import com.readytalk.cultivar.CultivarStartStopManager;
 
 @RunWith(Enclosed.class)
@@ -51,7 +52,7 @@ public class ShutdownListenerModuleBuilderTest {
         public void extraDependencies_Null_ThrowsNPE() {
             thrown.expect(NullPointerException.class);
 
-            ShutdownListenerModuleBuilder.create().extraDependencies(null);
+            ShutdownListenerModuleBuilder.create().extraDependencies((Module) null);
         }
 
         @Test
