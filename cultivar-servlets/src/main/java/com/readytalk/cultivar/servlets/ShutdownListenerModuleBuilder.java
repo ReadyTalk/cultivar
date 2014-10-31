@@ -37,7 +37,7 @@ public class ShutdownListenerModuleBuilder {
         }
     };
 
-    private ShutdownListenerModuleBuilder(final Class<? extends ServletContextListener> clazz) {
+    ShutdownListenerModuleBuilder(final Class<? extends ServletContextListener> clazz) {
         this.clazz = clazz;
     }
 
