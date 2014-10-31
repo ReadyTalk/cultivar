@@ -1,0 +1,13 @@
+dependencies {
+  compile (
+    project(':cultivar-core'),
+  )
+  
+  provided (
+  	"javax.servlet:javax.servlet-api:${libVersions.servlets}",
+  )
+  
+  testCompile (
+    project(':cultivar-test'),
+  )
+}

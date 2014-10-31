@@ -1,3 +1,12 @@
+buildscript {
+  repositories {
+  	maven { url 'http://repo.spring.io/plugins-release' }
+  }
+  dependencies {
+    classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+  }
+}
+
 defaultTasks 'build'
 
 subprojects {
@@ -5,6 +14,10 @@ subprojects {
   apply plugin: 'checkstyle'
   apply plugin: 'findbugs'
   apply plugin: 'jacoco'
+  apply plugin: 'propdeps'
+  apply plugin: 'propdeps-maven'
+  apply plugin: 'propdeps-idea'
+  apply plugin: 'propdeps-eclipse'
   
   defaultTasks 'build'
   
@@ -24,6 +37,7 @@ subprojects {
     metrics: "3.1.0",
     guava: "18.0",
     mockito: "1.9.5",
+    servlets: "3.0.1",
   ]
   
   ext.sharedManifest = manifest {
