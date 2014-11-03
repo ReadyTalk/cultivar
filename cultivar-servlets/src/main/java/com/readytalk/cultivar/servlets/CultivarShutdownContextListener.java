@@ -40,14 +40,16 @@ public class CultivarShutdownContextListener implements ServletContextListener {
 
     private static final Lock LOCK = new ReentrantLock();
 
-    @GuardedBy("LOCK")
-    private static CultivarStartStopManager START_STOP_MANAGER = null;
+    private static final long DEFAULT_STOP_TIME_MILLIS = 15000L;
 
     @GuardedBy("LOCK")
-    private static long STOP_TIME = 15000L;
+    private static CultivarStartStopManager startStopManager = null;
 
     @GuardedBy("LOCK")
-    private static TimeUnit STOP_UNIT = TimeUnit.MILLISECONDS;
+    private static long stopTime = DEFAULT_STOP_TIME_MILLIS;
+
+    @GuardedBy("LOCK")
+    private static TimeUnit stopUnit = TimeUnit.MILLISECONDS;
 
     @Override
     public void contextInitialized(final ServletContextEvent _sce) {
@@ -59,12 +61,12 @@ public class CultivarShutdownContextListener implements ServletContextListener {
 
         LOCK.lock();
         try {
-            if (START_STOP_MANAGER != null) {
+            if (startStopManager != null) {
 
                 Stopwatch timer = Stopwatch.createStarted();
 
                 try {
-                    START_STOP_MANAGER.stopAsync().awaitTerminated(STOP_TIME, STOP_UNIT);
+                    startStopManager.stopAsync().awaitTerminated(stopTime, stopUnit);
                 } catch (Exception ex) {
                     LOG.warn("Exception while shutting down cultivar.", ex);
                 }
@@ -86,9 +88,9 @@ public class CultivarShutdownContextListener implements ServletContextListener {
 
         LOCK.lock();
         try {
-            STOP_TIME = time;
-            STOP_UNIT = checkNotNull(unit, "TimeUnit cannot be null.");
-            START_STOP_MANAGER = manager;
+            stopTime = time;
+            stopUnit = checkNotNull(unit, "TimeUnit cannot be null.");
+            startStopManager = manager;
             LOG.debug("CultivarShutdownContextListener has been initialized: {}", manager);
         } finally {
             LOCK.unlock();
@@ -100,7 +102,7 @@ public class CultivarShutdownContextListener implements ServletContextListener {
     static CultivarStartStopManager getManager() {
         LOCK.lock();
         try {
-            return START_STOP_MANAGER;
+            return startStopManager;
         } finally {
             LOCK.unlock();
         }
