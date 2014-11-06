@@ -68,13 +68,13 @@ public class NamespacesIntegTest extends AbstractZookeeperClusterTest {
     public void namespacedNullFramework_HasNullNamespace() {
 
         assertNull(namespacedNullFramework.getNamespace());
-        assertEquals("test", namespacedNullFramework.newNamespaceAwareEnsurePath("test").getPath());
+        assertEquals("/test", namespacedNullFramework.newNamespaceAwareEnsurePath("/test").getPath());
     }
 
     @Test
     public void namespacedFooFramework_HasFooNamespace() {
 
         assertEquals("foo", namespacedFooFramework.getNamespace());
-        assertEquals("/foo/test", namespacedFooFramework.newNamespaceAwareEnsurePath("test").getPath());
+        assertEquals("/foo/test", namespacedFooFramework.newNamespaceAwareEnsurePath("/test").getPath());
     }
 }

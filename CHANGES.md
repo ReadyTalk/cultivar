@@ -24,3 +24,5 @@ Changelog
 
 1.4.0
 -----
+
+* Updated Curator to 2.7.0 and Checkstyle to 6.0.
