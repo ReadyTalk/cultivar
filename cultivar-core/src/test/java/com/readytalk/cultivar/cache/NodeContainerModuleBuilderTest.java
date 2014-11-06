@@ -175,7 +175,7 @@ public class NodeContainerModuleBuilderTest {
             when(framework.newNamespaceAwareEnsurePath(anyString())).thenReturn(ensurePath);
 
             Module module = NodeContainerModuleBuilder.create(String.class).annotation(Curator.class)
-                    .mapper(StringUTF8ByteArrayMapper.class).path("dev/test").build();
+                    .mapper(StringUTF8ByteArrayMapper.class).path("/dev/test").build();
             injector = Guice.createInjector(Stage.PRODUCTION, new AbstractModule() {
                 @Override
                 protected void configure() {
