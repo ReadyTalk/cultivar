@@ -21,3 +21,6 @@ Changelog
 * Easier unregistration/shutdown using either `java.lang.Runtime` shutdown hooks or customized shutdown systems (Issue #20).
 * Utilities for shutdown in a servlet environment (Issue #21). 
 * ImmutableProperties payload object (Issue #40).
+
+1.4.0
+-----
