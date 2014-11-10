@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Stopwatch;
 
 @Beta
 public abstract class AbstractZookeeperClusterTest {
@@ -29,10 +30,14 @@ public abstract class AbstractZookeeperClusterTest {
         protected void before() throws Throwable {
             super.before();
 
+            Stopwatch stopwatch = Stopwatch.createStarted();
+
+            LOG.info("Attempting to start ZK cluster: {}", testingCluster.getConnectString());
+
             testingCluster.start();
 
-            LOG.info("{}-servers started with connection string: {}", testingCluster.getServers().size(),
-                    testingCluster.getConnectString());
+            LOG.info("{}-servers started in {} milliseconds with connection string: {}", testingCluster.getServers()
+                    .size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS), testingCluster.getConnectString());
         }
 
         @Override
