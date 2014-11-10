@@ -32,13 +32,13 @@ public final class LeaderServiceModuleBuilder<T extends LeaderService> {
         this.key = checkNotNull(key);
     }
 
-    public LeaderServiceModuleBuilder implementation(final TypeLiteral<? extends T> clazz) {
+    public LeaderServiceModuleBuilder<T> implementation(final TypeLiteral<? extends T> clazz) {
         this.implementation = checkNotNull(clazz);
 
         return this;
     }
 
-    public LeaderServiceModuleBuilder implementation(final Class<? extends T> clazz) {
+    public LeaderServiceModuleBuilder<T> implementation(final Class<? extends T> clazz) {
         return implementation(TypeLiteral.get(clazz));
     }
 
@@ -46,7 +46,7 @@ public final class LeaderServiceModuleBuilder<T extends LeaderService> {
         return new LeaderServiceModuleBuilder<T>(checkNotNull(key));
     }
 
-    public LeaderServiceModuleBuilder dependencies(final Module... modules) {
+    public LeaderServiceModuleBuilder<T> dependencies(final Module... modules) {
         checkState(dependencies == null, "Dependencies were already set.");
         checkArgument(modules.length > 0);
 

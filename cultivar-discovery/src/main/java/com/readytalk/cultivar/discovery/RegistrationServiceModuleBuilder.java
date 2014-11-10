@@ -171,6 +171,7 @@ public class RegistrationServiceModuleBuilder<T> {
      *            An optional ScheduledExecutorService. By default this will be an exitingScheduledExecutorService with
      *            default parameters.
      */
+    @SuppressWarnings("unchecked")
     public RegistrationServiceModuleBuilder<T> updating(@Nonnegative final long time, final TimeUnit unit,
             final ScheduledExecutorService service) {
         checkArgument(time > 0, "Time must be positive.");
