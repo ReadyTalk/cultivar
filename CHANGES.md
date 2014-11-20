@@ -27,3 +27,4 @@ Changelog
 
 * Updated Curator to 2.7.0 and Checkstyle to 6.0.
 * Added a CONTRIBUTING.md file.
+* Upgraded gradle (2.2) and mockito (1.10.8). 
