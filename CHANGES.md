@@ -26,3 +26,4 @@ Changelog
 -----
 
 * Updated Curator to 2.7.0 and Checkstyle to 6.0.
+* Added a CONTRIBUTING.md file.
