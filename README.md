@@ -1,7 +1,7 @@
 Cultivar
 ========
 
-Cultivar is a lifecycle manager built around [Curator](http://curator.apache.org) using [Guice](https://code.google.com/p/google-guice/) and [Guava](https://code.google.com/p/guava-libraries/).
+Cultivar is a lifecycle manager built around [Curator](http://curator.apache.org) using [Guice](https://code.google.com/p/google-guice/) and [Guava](https://code.google.com/p/guava-libraries/). It wraps the Curator constructors and builders to allow bringing them up in a consistent manner and tearing them down in a consistent manner.
 
 What is Cultivar?
 -----------------
@@ -29,6 +29,18 @@ What Cultivar Isn't
 
  * A replacement for Curator. For the most part it provides Curator objects and interfaces directly to the developer.
  * A wrapper for Curator. For the most part it doesn't decorate Curator's behavior, mostly configuring it using the same strategies and objects that Curator itself uses. 
+ 
+ 
+Components
+----------
+
+Cultivar follows a project layout similar to that used by Curator.  
+
+ * `cultivar-core` contains the general management framework for `curator-framework` as well as the basic classes from `curator-recipes`. 
+ * `cultivar-discovery` contains tools for working with `curator-discovery`.
+ * `cultivar-servlets` contains tools for integrating into a servlet's [`ServletContextListener`](https://docs.oracle.com/javaee/6/api/javax/servlet/ServletContextListener.html).
+ * `cultivar-test` contains tools for working with `curator-test` and some of the challenges involved in testing ZooKeeper-connected objects.
+ 
 
 Building and Testing
 --------------------
@@ -96,12 +108,22 @@ This would:
 
  * Initialize a Curator instance with a given [namespace](http://curator.apache.org/curator-framework/#namespace).
  * Throw an exception on the Guice instantiation if the namespace is not set.
- * Use system properties or environment variables to build either a FixedEnsembleProvider or a Exhibitor-based EnsembleProvider.
+ * Use system properties or environment variables to build either a `FixedEnsembleProvider `or a Exhibitor-based `EnsembleProvider`.
  * Use the specified [retry policy](http://curator.apache.org/apidocs/org/apache/curator/RetryPolicy.html) within Curator.
- * Build a ScheduledLoggingLeaderService, bound with the appropriate annotation.
- * Hook in your [MetricRegistry](http://metrics.codahale.com) into the [TracerDriver](https://curator.apache.org/apidocs/org/apache/curator/drivers/TracerDriver.html) to report to your existing metrics services.
+ * Bind Curator for injection through Guice.
+ * Build a `ScheduledLoggingLeaderService`, bound with the appropriate annotation.
+ *  Registers a [`TracerDriver`](https://curator.apache.org/apidocs/org/apache/curator/drivers/TracerDriver.html) with the curator instance that will forward to [dropwizard-metrics](https://dropwizard.github.io/metrics/3.1.0/).
  * Start everything asynchronously.
  * Ensure that the Curator instance is started first, then any additional services.
+ 
+From there the program can access the objects using standard injection semantics:
+
+```java
+@Inject
+ExampleConstructor(@Curator final CuratorFramework framework, @Named("service1") final LeaderService leaderService) {
+	...
+}
+```
 
 ### Tearing Down
 
@@ -225,12 +247,19 @@ inj.getInstance(CultivarStartStopManager.class).startAsync().awaitRunning();
 inj.getInstance(Key.get(ServiceManager.class, Discovery.class)).startAsync().awaitHealthy();
 ```
 
-Then when finished:
+At this point the standard curator [`ServiceProvider`](https://curator.apache.org/apidocs/org/apache/curator/x/discovery/ServiceProvider.html) object can be injected in the standard ways using the provided annotation:
 
+```java
+@Inject
+ExampleConstructor(@Cultivar final ServiceProvider<Void> provider) {
+	// ...
+}
 ```
 
-	cultivarManager.stopAsync().awaitTerminated();
+Then when finished:
 
+```java
+	cultivarManager.stopAsync().awaitTerminated();
 ```
 
 Note that both the client and the server may specify multiple annotations to cover several different services.
@@ -281,10 +310,10 @@ In no particular order:
  * Support more of the patterns from Curator.
  * Create clean patterns around post-initialization creation of Curator patterns.
  * Allow for multiple ZK instances.
- * Cleanly allow for differing namespaces.
  * Allow the use of bound objects instead of instances for things like `ProviderStrategy`.
  * Create HealthCheck that returns unhealthy until the initial connection is established.
  * Switch from `Preconditions` to `Verification` where appropriate. 
+ * Create a more "guice-plugin"-style system where possible. 
 
 Cultivar can still help with many of the "unsupported" use cases since it will already manage starting the relevant services, however, they can be made much easier and more automatic.
 
