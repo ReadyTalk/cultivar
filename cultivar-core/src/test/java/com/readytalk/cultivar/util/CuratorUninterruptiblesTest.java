@@ -28,7 +28,7 @@ public class CuratorUninterruptiblesTest {
     @RunWith(MockitoJUnitRunner.class)
     public static class CuratorFrameworkTest {
         @Rule
-        public final Timeout timeout = new Timeout(10000);
+        public final Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
         @Mock
         private CuratorFramework framework;
@@ -93,7 +93,7 @@ public class CuratorUninterruptiblesTest {
     @RunWith(MockitoJUnitRunner.class)
     public static class DoubleBarrierTest {
         @Rule
-        public final Timeout timeout = new Timeout(10000);
+        public final Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
         @Mock
         private DistributedDoubleBarrier doubleBarrier;
