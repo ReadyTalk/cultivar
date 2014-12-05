@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +23,7 @@ public class ConditionalWaitTest {
     public final ExpectedException thrown = ExpectedException.none();
 
     @Rule
-    public final Timeout timeout = new Timeout(5000);
+    public final Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Mock
     private Callable<Boolean> condition;

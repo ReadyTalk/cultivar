@@ -7,8 +7,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.readytalk.cultivar.CultivarStartStopManager;
-import com.readytalk.cultivar.CuratorModule;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.ensemble.fixed.FixedEnsembleProvider;
@@ -22,10 +20,6 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.readytalk.cultivar.test.AbstractZookeeperClusterTest;
-import com.readytalk.cultivar.Curator;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -33,16 +27,17 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.Stage;
-import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
+import com.readytalk.cultivar.CultivarStartStopManager;
+import com.readytalk.cultivar.Curator;
+import com.readytalk.cultivar.CuratorModule;
+import com.readytalk.cultivar.test.AbstractZookeeperClusterTest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LeaderScheduledServiceIntegTest extends AbstractZookeeperClusterTest {
 
-    private final Logger logger = LoggerFactory.getLogger(LeaderScheduledServiceIntegTest.class);
-
     @Rule
-    public final Timeout timeout = new Timeout((int) TimeUnit.MILLISECONDS.convert(2L, TimeUnit.MINUTES));
+    public final Timeout timeout = new Timeout(2L, TimeUnit.MINUTES);
 
     private final AtomicLong counter1 = new AtomicLong(0L);
     private final AtomicLong counter2 = new AtomicLong(0L);
@@ -71,8 +66,7 @@ public class LeaderScheduledServiceIntegTest extends AbstractZookeeperClusterTes
 
                 install(LeaderServiceModuleBuilder
                         .create(Key.get(ScheduledLoggingLeaderService.class, Names.named("service1")))
-                        .implementation(ScheduledLoggingLeaderService.class)
-                        .dependencies(new AbstractModule() {
+                        .implementation(ScheduledLoggingLeaderService.class).dependencies(new AbstractModule() {
                             @Override
                             protected void configure() {
                                 bind(AtomicLong.class).toInstance(counter1);
@@ -80,8 +74,7 @@ public class LeaderScheduledServiceIntegTest extends AbstractZookeeperClusterTes
                         }).build());
                 install(LeaderServiceModuleBuilder
                         .create(Key.get(ScheduledLoggingLeaderService.class, Names.named("service2")))
-                        .implementation(ScheduledLoggingLeaderService.class)
-                        .dependencies(new AbstractModule() {
+                        .implementation(ScheduledLoggingLeaderService.class).dependencies(new AbstractModule() {
                             @Override
                             protected void configure() {
                                 bind(AtomicLong.class).toInstance(counter2);

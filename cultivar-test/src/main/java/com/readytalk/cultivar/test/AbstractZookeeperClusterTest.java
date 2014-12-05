@@ -64,7 +64,7 @@ public abstract class AbstractZookeeperClusterTest {
 
     public AbstractZookeeperClusterTest(final int clusterSize, final long testTime, final TimeUnit unit) {
 
-        timeout = new Timeout((int) unit.toMillis(testTime));
+        timeout = new Timeout(testTime, unit);
         testingCluster = new TestingCluster(clusterSize);
     }
 }
