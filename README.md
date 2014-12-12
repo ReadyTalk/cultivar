@@ -1,6 +1,8 @@
 Cultivar
 ========
 
+[![Build Status](https://drone.io/github.com/ReadyTalk/cultivar/status.png)](https://drone.io/github.com/ReadyTalk/cultivar/latest)
+
 Cultivar is a lifecycle manager built around [Curator](http://curator.apache.org) using [Guice](https://code.google.com/p/google-guice/) and [Guava](https://code.google.com/p/guava-libraries/). It wraps the Curator constructors and builders to allow bringing them up in a consistent manner and tearing them down in a consistent manner.
 
 What is Cultivar?
