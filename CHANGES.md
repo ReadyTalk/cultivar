@@ -29,3 +29,10 @@ Changelog
 * Added a CONTRIBUTING.md file.
 * Upgraded gradle (2.2.1), JUnit (4.12), and mockito (1.10.8) (Issue #37).
 * Minor documentation improvements.
+
+1.5.0
+-----
+
+* Namespace change (Issue #52).
+* Upgrading Curator to 2.7.1 (Issue #53).
+* Upgrading Gradle to 2.3.

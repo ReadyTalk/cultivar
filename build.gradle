@@ -24,12 +24,12 @@ subprojects {
   sourceCompatibility = 1.6
   targetCompatibility = 1.6
   
-  group = 'org.readytalk.cultivar'
-  version = '1.4.0-SNAPSHOT'
+  group = 'com.readytalk.cultivar'
+  version = '1.5.0-SNAPSHOT'
   
   project.ext.libVersions = [
-    curator: "2.7.0",
-    slf4j: "1.7.7",
+    curator: "2.7.1",
+    slf4j: "1.7.10",
     logback: "1.1.2",
     findbugs: "2.0.3",
     junit: "4.12",
@@ -147,5 +147,5 @@ subprojects {
 }
 
 wrapper {
-  gradleVersion '2.2.1'
+  gradleVersion '2.3'
 }
