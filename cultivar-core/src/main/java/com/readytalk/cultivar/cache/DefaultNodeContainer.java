@@ -7,6 +7,10 @@ import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
+import com.readytalk.cultivar.util.PropertyReader;
+import com.sun.org.apache.xerces.internal.impl.PropertyManager;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
@@ -26,24 +30,33 @@ public class DefaultNodeContainer<T> extends AbstractIdleService implements Cura
 
     private final NodeCache cache;
     private final ByteArrayMapper<T> mapper;
+    private final Optional<String> propOveride;
 
     @Inject
-    DefaultNodeContainer(@Private final NodeCache cache, @Private final ByteArrayMapper<T> mapper) {
+    DefaultNodeContainer(@Private final NodeCache cache, @Private final ByteArrayMapper<T> mapper,
+                         @Private final Optional<String> propOverride) {
         this.cache = cache;
         this.mapper = mapper;
+        this.propOveride = propOverride;
     }
 
     @Override
     @Nullable
     public T get() {
 
-        ChildData data = cache.getCurrentData();
+        final String value;
+        final byte[] bytes;
+        if (propOveride.isPresent() && (value = PropertyReader.getProperty(propOveride.get())) != null) {
+            bytes = value.getBytes(Charsets.UTF_8);
+        } else {
+            ChildData data = cache.getCurrentData();
 
-        if (data == null) {
-            return null;
+            if (data == null) {
+                return null;
+            }
+
+            bytes = data.getData();
         }
-
-        byte[] bytes = data.getData();
 
         if (bytes == null) {
             return null;
