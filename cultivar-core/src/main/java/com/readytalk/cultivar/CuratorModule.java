@@ -11,12 +11,15 @@ import org.apache.curator.framework.state.ConnectionStateListener;
 import com.google.common.annotations.Beta;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.readytalk.cultivar.barriers.BarrierModule;
 import com.readytalk.cultivar.connection.LastKnownStateModule;
+import com.readytalk.cultivar.internal.Private;
 
 /**
  * The method for creating the Curator instance.
@@ -61,7 +64,10 @@ public class CuratorModule extends AbstractModule {
         install(new BarrierModule());
         install(new LastKnownStateModule());
 
-        Multibinder.newSetBinder(binder(), CuratorService.class);
+        bind(BlankCuratorService.class).annotatedWith(Private.class).to(BlankCuratorService.class).in(Scopes.SINGLETON);
+
+        Multibinder.newSetBinder(binder(), CuratorService.class).addBinding()
+                .to(Key.get(BlankCuratorService.class, Private.class));
 
         Multibinder.newSetBinder(binder(), UnhandledErrorListener.class);
 

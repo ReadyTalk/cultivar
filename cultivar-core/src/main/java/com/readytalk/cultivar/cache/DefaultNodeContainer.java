@@ -13,11 +13,14 @@ import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.readytalk.cultivar.CuratorService;
 import com.readytalk.cultivar.internal.Private;
+import com.readytalk.cultivar.util.PropertyReader;
 import com.readytalk.cultivar.util.mapping.ByteArrayMapper;
 
 @ThreadSafe
@@ -26,24 +29,38 @@ public class DefaultNodeContainer<T> extends AbstractIdleService implements Cura
 
     private final NodeCache cache;
     private final ByteArrayMapper<T> mapper;
+    private final Optional<String> propOveride;
 
     @Inject
-    DefaultNodeContainer(@Private final NodeCache cache, @Private final ByteArrayMapper<T> mapper) {
+    DefaultNodeContainer(@Private final NodeCache cache, @Private final ByteArrayMapper<T> mapper,
+            @Private final Optional<String> propOverride) {
         this.cache = cache;
         this.mapper = mapper;
+        this.propOveride = propOverride;
     }
 
     @Override
     @Nullable
     public T get() {
 
-        ChildData data = cache.getCurrentData();
+        String value = null;
+        final byte[] bytes;
 
-        if (data == null) {
-            return null;
+        if (propOveride.isPresent()) {
+            value = PropertyReader.getProperty(propOveride.get());
         }
 
-        byte[] bytes = data.getData();
+        if (value != null) {
+            bytes = value.getBytes(Charsets.UTF_8);
+        } else {
+            ChildData data = cache.getCurrentData();
+
+            if (data == null) {
+                return null;
+            }
+
+            bytes = data.getData();
+        }
 
         if (bytes == null) {
             return null;
