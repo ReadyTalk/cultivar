@@ -10,10 +10,15 @@ import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Executor;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
+import com.readytalk.cultivar.util.PropertyReader;
 import org.apache.curator.framework.listen.ListenerContainer;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,7 +72,12 @@ public class DefaultNodeContainerTest {
 
         when(cache.getCurrentData()).thenReturn(childData);
 
-        container = new DefaultNodeContainer<Object>(cache, mapper);
+        container = new DefaultNodeContainer<Object>(cache, mapper, Optional.<String>absent());
+    }
+
+    @After
+    public void tearDown() {
+        PropertyReader.reset();
     }
 
     @Test
@@ -192,5 +202,36 @@ public class DefaultNodeContainerTest {
         doThrow(new IllegalStateException()).when(cache).rebuild();
 
         container.rebuild();
+    }
+
+    @Test
+    public void get_PropertyOverride_Null_ReturnsStandardGet() {
+        container = new DefaultNodeContainer<Object>(cache, mapper, Optional.of("propvalue"));
+
+        PropertyReader.setProperties(ImmutableMap.<String, String>of());
+
+        byte[] bytes = new byte[] { 0x01 };
+        when(childData.getData()).thenReturn(bytes);
+        when(mapper.map(bytes)).thenReturn(returnObject);
+
+        assertEquals(returnObject, container.get());
+    }
+
+    @Test
+    public void get_PropertyOverride_Present_ReturnsPropOverride() {
+
+        final String key = "propvalue";
+        final String value = "value";
+
+        container = new DefaultNodeContainer<Object>(cache, mapper, Optional.of(key));
+
+        PropertyReader.setProperties(ImmutableMap.of(key, value));
+
+        byte[] bytes = new byte[] { 0x01 };
+        when(childData.getData()).thenReturn(bytes);
+        when(mapper.map(bytes)).thenReturn(returnObject);
+        when(mapper.map("value".getBytes(Charsets.UTF_8))).thenReturn(value);
+
+        assertEquals(value, container.get());
     }
 }

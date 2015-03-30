@@ -7,17 +7,19 @@ import java.lang.annotation.Annotation;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.readytalk.cultivar.AbstractModuleBuilder;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 
+import com.google.common.base.Optional;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.PrivateModule;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.google.inject.util.Types;
+import com.readytalk.cultivar.AbstractModuleBuilder;
 import com.readytalk.cultivar.CuratorService;
 import com.readytalk.cultivar.internal.AnnotationHolder;
 import com.readytalk.cultivar.internal.Private;
@@ -32,6 +34,7 @@ public class NodeContainerModuleBuilder<T> extends AbstractModuleBuilder<NodeCon
 
     private Class<? extends ByteArrayMapper<T>> mapper = null;
     private String path = null;
+    private String override = null;
     private AnnotationHolder annotationHolder = null;
 
     NodeContainerModuleBuilder(final Class<T> objectType) {
@@ -63,6 +66,12 @@ public class NodeContainerModuleBuilder<T> extends AbstractModuleBuilder<NodeCon
 
     public NodeContainerModuleBuilder<T> path(final String nodePath) {
         this.path = checkNotNull(nodePath);
+
+        return this;
+    }
+
+    public NodeContainerModuleBuilder<T> overrideProperty(final String nodeOverride) {
+        this.override = checkNotNull(nodeOverride);
 
         return this;
     }
@@ -110,6 +119,13 @@ public class NodeContainerModuleBuilder<T> extends AbstractModuleBuilder<NodeCon
                                 (Key<DefaultNodeContainer<T>>) Key.get(Types.newParameterizedType(
                                         DefaultNodeContainer.class, objectType))).in(Singleton.class);
                         expose(nodeContainerKey);
+                    }
+
+                    @Private
+                    @Provides
+                    @Singleton
+                    public Optional<String> overrideProperty() {
+                        return Optional.fromNullable(override);
                     }
                 });
 
