@@ -36,3 +36,5 @@ Changelog
 * Namespace change (Issue #52).
 * Upgrading Curator to 2.7.1 (Issue #53).
 * Upgrading Gradle to 2.3.
+* Fixed lack of `CuratorService`s preventing demo code from working (Issue #55).
+* Adding property override to NodeContainer (Issue #54).

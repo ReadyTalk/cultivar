@@ -36,7 +36,7 @@ subprojects {
     guice: "3.0",
     metrics: "3.1.0",
     guava: "18.0",
-    mockito: "1.10.8",
+    mockito: "1.10.19",
     servlets: "3.0.1",
   ]
   

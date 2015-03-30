@@ -101,6 +101,20 @@ public class NodeContainerModuleBuilderTest {
         }
 
         @Test
+        public void overrideProperty_NullValue_ThrowsNPE() {
+
+            thrown.expect(NullPointerException.class);
+
+            builder.overrideProperty(null);
+        }
+
+        @Test
+        public void overrideProperty_ReturnsSelf() {
+
+            assertEquals(builder, builder.overrideProperty("any"));
+        }
+
+        @Test
         public void annotationWithClass_ReturnsSelf() {
 
             assertEquals(builder, builder.annotation(Curator.class));
