@@ -44,6 +44,7 @@ class ServiceProviderProvider<T> implements Provider<ServiceProvider<T>> {
     public void setInstanceFilters(@Private final Set<InstanceFilter<T>> filters) {
         for (InstanceFilter<T> o : filters) {
             builder.additionalFilter(o);
+
         }
     }
 

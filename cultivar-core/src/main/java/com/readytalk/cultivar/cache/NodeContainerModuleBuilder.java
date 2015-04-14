@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.readytalk.cultivar.util.PropertyReader;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 
 import com.google.common.base.Optional;
@@ -70,6 +71,18 @@ public class NodeContainerModuleBuilder<T> extends AbstractModuleBuilder<NodeCon
         return this;
     }
 
+    /**
+     * If this property gets set while the system is running then the NodeContainer will represent the value of the
+     * property, regardless of what the underlying ZK node shows. If the property is set when the module is bound then
+     * it cannot be unset. This behavior can be slightly counterintuitive, but is designed around two different use
+     * cases: 1) "I am starting this up in a test harness and want to see what happens for an isolated testing scenario"
+     * 2) "I have a running system that I wish to override for a little while."
+     * 
+     * Unfortunately this does create an non-intuitive behavior since different things can be bound based on whether a
+     * given property is set when the module is bound.
+     *
+     * TODO: There is probably a cleaner approach to this entire problem.
+     */
     public NodeContainerModuleBuilder<T> overrideProperty(final String nodeOverride) {
         this.override = checkNotNull(nodeOverride);
 
@@ -115,9 +128,16 @@ public class NodeContainerModuleBuilder<T> extends AbstractModuleBuilder<NodeCon
                                         Types.newParameterizedType(ByteArrayMapper.class, objectType), Private.class))
                                 .to(mapper);
 
-                        bind(nodeContainerKey).to(
-                                (Key<DefaultNodeContainer<T>>) Key.get(Types.newParameterizedType(
-                                        DefaultNodeContainer.class, objectType))).in(Singleton.class);
+                        if (override != null && PropertyReader.getProperty(override) != null) {
+                            bind(nodeContainerKey).to(
+                                    (Key<DefaultNodeContainer<T>>) Key.get(Types.newParameterizedType(
+                                            PropertyOverrideNodeContainer.class, objectType))).in(Singleton.class);
+                        } else {
+                            bind(nodeContainerKey).to(
+                                    (Key<DefaultNodeContainer<T>>) Key.get(Types.newParameterizedType(
+                                            DefaultNodeContainer.class, objectType))).in(Singleton.class);
+                        }
+
                         expose(nodeContainerKey);
                     }
 
