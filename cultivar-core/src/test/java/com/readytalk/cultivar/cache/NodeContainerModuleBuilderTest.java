@@ -9,8 +9,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Set;
 
+import com.google.common.collect.ImmutableMap;
+import com.readytalk.cultivar.util.PropertyReader;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.EnsurePath;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -198,6 +201,11 @@ public class NodeContainerModuleBuilderTest {
             }, module);
         }
 
+        @After
+        public void tearDown() {
+            PropertyReader.reset();
+        }
+
         @Test
         public void getInstance_NodeContainerWithAnnotation_ReturnsNodeContainer() {
             assertNotNull(injector.getInstance(Key.get(Types.newParameterizedType(NodeContainer.class, String.class),
@@ -220,6 +228,42 @@ public class NodeContainerModuleBuilderTest {
             }
 
             fail("NodeContainer not in set of CuratorServices");
+        }
+
+        @Test
+        public void getInstance_NodeContainerWithAnnotation_PropertyOverrideSetAfter_ReturnsDefaultNodeContainer() {
+
+            Module module = NodeContainerModuleBuilder.create(String.class).annotation(Curator.class)
+                    .mapper(StringUTF8ByteArrayMapper.class).overrideProperty("foo").path("/dev/test").build();
+            injector = Guice.createInjector(Stage.PRODUCTION, new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(CuratorFramework.class).annotatedWith(Curator.class).toInstance(framework);
+                }
+            }, module);
+
+            PropertyReader.setProperties(ImmutableMap.of("foo", "foo"));
+
+            assertTrue(injector.getInstance(Key.get(Types.newParameterizedType(NodeContainer.class, String.class),
+                    Curator.class)) instanceof DefaultNodeContainer);
+        }
+
+        @Test
+        public void getInstance_NodeContainerWithAnnotation_PropertyOverrideSetBefore_ReturnsPropertyOverrideNodeContainer() {
+
+            PropertyReader.setProperties(ImmutableMap.of("foo", "foo"));
+
+            Module module = NodeContainerModuleBuilder.create(String.class).annotation(Curator.class)
+                    .mapper(StringUTF8ByteArrayMapper.class).overrideProperty("foo").path("/dev/test").build();
+            injector = Guice.createInjector(Stage.PRODUCTION, new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(CuratorFramework.class).annotatedWith(Curator.class).toInstance(framework);
+                }
+            }, module);
+
+            assertTrue(injector.getInstance(Key.get(Types.newParameterizedType(NodeContainer.class, String.class),
+                    Curator.class)) instanceof PropertyOverrideNodeContainer);
         }
     }
 }

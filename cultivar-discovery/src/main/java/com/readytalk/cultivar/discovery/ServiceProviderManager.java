@@ -21,7 +21,7 @@ public class ServiceProviderManager<T> extends AbstractIdleService implements Di
     private final ServiceProvider<T> provider;
 
     @Inject
-    ServiceProviderManager(@Private final ServiceProvider<T> provider) {
+    protected ServiceProviderManager(@Private final ServiceProvider<T> provider) {
         this.provider = provider;
 
     }
