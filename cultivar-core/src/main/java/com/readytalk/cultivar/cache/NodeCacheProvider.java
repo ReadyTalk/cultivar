@@ -1,14 +1,13 @@
 package com.readytalk.cultivar.cache;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.NodeCache;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.readytalk.cultivar.internal.Private;
 
-class NodeCacheProvider implements Provider<NodeCache> {
+class NodeCacheProvider implements Provider<NodeCacheWrapper> {
 
     private final CuratorFramework client;
     private final String path;
@@ -23,7 +22,7 @@ class NodeCacheProvider implements Provider<NodeCache> {
     }
 
     @Override
-    public NodeCache get() {
-        return new NodeCache(client, path, compressedData);
+    public NodeCacheWrapper get() {
+        return new NodeCacheWrapper(client, path, compressedData);
     }
 }
