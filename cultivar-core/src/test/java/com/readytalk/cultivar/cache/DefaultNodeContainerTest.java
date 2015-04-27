@@ -10,13 +10,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Executor;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
-import com.readytalk.cultivar.util.PropertyReader;
 import org.apache.curator.framework.listen.ListenerContainer;
 import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +24,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
+import com.readytalk.cultivar.util.PropertyReader;
 import com.readytalk.cultivar.util.mapping.ByteArrayMapper;
 
 @SuppressWarnings("ConstantConditions")
@@ -41,7 +40,7 @@ public class DefaultNodeContainerTest {
     private final Object returnObject = new Object();
 
     @Mock
-    private NodeCache cache;
+    private NodeCacheWrapper cache;
 
     @Mock
     private Executor executor;
@@ -72,7 +71,7 @@ public class DefaultNodeContainerTest {
 
         when(cache.getCurrentData()).thenReturn(childData);
 
-        container = new DefaultNodeContainer<Object>(cache, mapper, Optional.<String>absent());
+        container = new DefaultNodeContainer<Object>(cache, mapper, Optional.<String> absent());
     }
 
     @After
@@ -208,7 +207,7 @@ public class DefaultNodeContainerTest {
     public void get_PropertyOverride_Null_ReturnsStandardGet() {
         container = new DefaultNodeContainer<Object>(cache, mapper, Optional.of("propvalue"));
 
-        PropertyReader.setProperties(ImmutableMap.<String, String>of());
+        PropertyReader.setProperties(ImmutableMap.<String, String> of());
 
         byte[] bytes = new byte[] { 0x01 };
         when(childData.getData()).thenReturn(bytes);

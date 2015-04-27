@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +26,12 @@ import com.readytalk.cultivar.util.mapping.ByteArrayMapper;
 public class DefaultNodeContainer<T> extends AbstractIdleService implements CuratorService, NodeContainer<T> {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultNodeContainer.class);
 
-    private final NodeCache cache;
+    private final NodeCacheWrapper cache;
     private final ByteArrayMapper<T> mapper;
     private final Optional<String> propOveride;
 
     @Inject
-    DefaultNodeContainer(@Private final NodeCache cache, @Private final ByteArrayMapper<T> mapper,
+    DefaultNodeContainer(@Private final NodeCacheWrapper cache, @Private final ByteArrayMapper<T> mapper,
             @Private final Optional<String> propOverride) {
         this.cache = cache;
         this.mapper = mapper;
