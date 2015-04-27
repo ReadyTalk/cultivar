@@ -9,9 +9,12 @@ import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.curator.utils.PathUtils;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 /**
  * To get around CURATOR-169.
  */
+@ThreadSafe
 public class NodeCacheWrapper {
 
     private final CuratorFramework framework;
@@ -34,7 +37,9 @@ public class NodeCacheWrapper {
     private NodeCache delegate() {
         if (delegateObj == null) {
             synchronized (this) {
-                delegateObj = new NodeCache(framework, path, dataIsCompressed);
+                if (delegateObj == null) {
+                    delegateObj = new NodeCache(framework, path, dataIsCompressed);
+                }
             }
         }
 
