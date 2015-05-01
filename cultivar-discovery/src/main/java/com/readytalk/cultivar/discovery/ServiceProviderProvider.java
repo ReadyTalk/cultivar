@@ -10,11 +10,11 @@ import org.apache.curator.x.discovery.InstanceFilter;
 import org.apache.curator.x.discovery.ProviderStrategy;
 import org.apache.curator.x.discovery.ServiceProvider;
 import org.apache.curator.x.discovery.ServiceProviderBuilder;
-import com.readytalk.cultivar.internal.Private;
 
 import com.google.common.annotations.Beta;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.readytalk.cultivar.internal.Private;
 
 /**
  * Generates a ServiceProvider instance.
@@ -60,6 +60,6 @@ class ServiceProviderProvider<T> implements Provider<ServiceProvider<T>> {
 
     @Override
     public ServiceProvider<T> get() {
-        return builder.build();
+        return new ServiceProviderWrapper<T>(builder);
     }
 }

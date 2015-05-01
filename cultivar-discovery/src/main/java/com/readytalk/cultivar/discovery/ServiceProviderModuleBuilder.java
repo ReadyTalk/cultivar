@@ -9,6 +9,12 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.apache.curator.x.discovery.DownInstancePolicy;
+import org.apache.curator.x.discovery.InstanceFilter;
+import org.apache.curator.x.discovery.ProviderStrategy;
+import org.apache.curator.x.discovery.ServiceProvider;
+import org.apache.curator.x.discovery.ServiceProviderBuilder;
+
 import com.google.common.annotations.Beta;
 import com.google.common.collect.Sets;
 import com.google.inject.AbstractModule;
@@ -22,12 +28,6 @@ import com.google.inject.util.Types;
 import com.readytalk.cultivar.CuratorService;
 import com.readytalk.cultivar.internal.AnnotationHolder;
 import com.readytalk.cultivar.internal.Private;
-
-import org.apache.curator.x.discovery.DownInstancePolicy;
-import org.apache.curator.x.discovery.InstanceFilter;
-import org.apache.curator.x.discovery.ProviderStrategy;
-import org.apache.curator.x.discovery.ServiceProvider;
-import org.apache.curator.x.discovery.ServiceProviderBuilder;
 
 @Beta
 @NotThreadSafe
