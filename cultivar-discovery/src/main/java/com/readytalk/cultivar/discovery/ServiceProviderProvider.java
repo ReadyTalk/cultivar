@@ -10,11 +10,11 @@ import org.apache.curator.x.discovery.InstanceFilter;
 import org.apache.curator.x.discovery.ProviderStrategy;
 import org.apache.curator.x.discovery.ServiceProvider;
 import org.apache.curator.x.discovery.ServiceProviderBuilder;
-import com.readytalk.cultivar.internal.Private;
 
 import com.google.common.annotations.Beta;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.readytalk.cultivar.internal.Private;
 
 /**
  * Generates a ServiceProvider instance.
@@ -31,17 +31,17 @@ class ServiceProviderProvider<T> implements Provider<ServiceProvider<T>> {
     }
 
     @Inject
-    public void setServiceName(@Private final String name) {
+    public synchronized void setServiceName(@Private final String name) {
         builder.serviceName(name);
     }
 
     @Inject(optional = true)
-    public void setDownInstancePolicy(@Private final DownInstancePolicy policy) {
+    public synchronized void setDownInstancePolicy(@Private final DownInstancePolicy policy) {
         builder.downInstancePolicy(policy);
     }
 
     @Inject(optional = true)
-    public void setInstanceFilters(@Private final Set<InstanceFilter<T>> filters) {
+    public synchronized void setInstanceFilters(@Private final Set<InstanceFilter<T>> filters) {
         for (InstanceFilter<T> o : filters) {
             builder.additionalFilter(o);
 
@@ -49,17 +49,17 @@ class ServiceProviderProvider<T> implements Provider<ServiceProvider<T>> {
     }
 
     @Inject(optional = true)
-    public void setProviderStrategy(@Private final ProviderStrategy<T> strategy) {
+    public synchronized void setProviderStrategy(@Private final ProviderStrategy<T> strategy) {
         builder.providerStrategy(strategy);
     }
 
     @Inject(optional = true)
-    public void setThreadFactory(@Private final ThreadFactory threadFactory) {
+    public synchronized void setThreadFactory(@Private final ThreadFactory threadFactory) {
         builder.threadFactory(threadFactory);
     }
 
     @Override
-    public ServiceProvider<T> get() {
-        return builder.build();
+    public synchronized ServiceProvider<T> get() {
+        return new ServiceProviderWrapper<T>(builder);
     }
 }

@@ -40,3 +40,4 @@ Changelog
 * Adding property override to NodeContainer (Issue #54).
 * Adding tools to facilitate easier testing and rapid prototyping (Issue #60).
 * Added the NodeCacheWrapper (Issue #62).
+* Added the ServiceProviderWrapper (Issue #62).

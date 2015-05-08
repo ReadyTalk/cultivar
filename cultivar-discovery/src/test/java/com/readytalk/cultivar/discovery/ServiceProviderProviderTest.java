@@ -53,7 +53,7 @@ public class ServiceProviderProviderTest {
 
     @Test
     public void get_ReturnsDelegate() {
-        assertEquals(provider, providerProvider.get());
+        assertEquals(provider, ((ServiceProviderWrapper<Void>)providerProvider.get()).get());
     }
 
     @Test
