@@ -39,7 +39,7 @@ public class PropertyOverrideNodeContainer<T> extends AbstractScheduledService i
     private final long propertyCheckRateMillis = Long.parseLong(PropertyReader.getProperty(
             "config.cultivar.nodecache.property.millis", "1000"));
 
-    private final ConcurrentHashMap<NodeCacheListener, Executor> listeners = new ConcurrentHashMap<NodeCacheListener, Executor>();
+    private final ConcurrentHashMap<NodeCacheListener, Executor> listeners = new ConcurrentHashMap<>();
 
     private final ByteArrayMapper<T> mapper;
     private final String propOverride;

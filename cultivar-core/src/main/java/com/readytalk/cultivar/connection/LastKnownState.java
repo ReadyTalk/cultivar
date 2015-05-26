@@ -16,7 +16,7 @@ import com.google.common.annotations.Beta;
 @Beta
 public class LastKnownState {
 
-    private final AtomicReference<ConnectionState> state = new AtomicReference<ConnectionState>(ConnectionState.LOST);
+    private final AtomicReference<ConnectionState> state = new AtomicReference<>(ConnectionState.LOST);
 
     @Inject
     LastKnownState() {

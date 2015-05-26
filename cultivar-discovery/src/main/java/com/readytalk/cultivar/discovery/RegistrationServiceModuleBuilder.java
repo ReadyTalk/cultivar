@@ -60,6 +60,7 @@ public class RegistrationServiceModuleBuilder<T> {
 
     private ScheduledExecutorService executorService = null;
 
+    @SuppressWarnings("rawtypes")
     private Class<? extends RegistrationService> bindType = DefaultRegistrationService.class;
 
     RegistrationServiceModuleBuilder(final Class<T> clazz) {
@@ -77,7 +78,7 @@ public class RegistrationServiceModuleBuilder<T> {
      * Creates a RegistrationServiceModuleBuilder.
      */
     public static <T> RegistrationServiceModuleBuilder<T> create(final Class<T> clazz) {
-        return new RegistrationServiceModuleBuilder<T>(clazz);
+        return new RegistrationServiceModuleBuilder<>(clazz);
     }
 
     /**
@@ -127,7 +128,7 @@ public class RegistrationServiceModuleBuilder<T> {
     public RegistrationServiceModuleBuilder<T> provider(
             final Class<? extends Provider<ServiceInstance<T>>> instanceProvider) {
 
-        binderAssistant = new BinderAssistant<ServiceInstance<T>>(instanceProvider);
+        binderAssistant = new BinderAssistant<>(instanceProvider);
 
         return this;
     }
@@ -135,14 +136,14 @@ public class RegistrationServiceModuleBuilder<T> {
     public RegistrationServiceModuleBuilder<T> provider(
             final Key<? extends Provider<ServiceInstance<T>>> instanceProvider) {
 
-        binderAssistant = new BinderAssistant<ServiceInstance<T>>(instanceProvider);
+        binderAssistant = new BinderAssistant<>(instanceProvider);
 
         return this;
     }
 
     public RegistrationServiceModuleBuilder<T> provider(final Provider<? extends ServiceInstance<T>> instanceProvider) {
 
-        binderAssistant = new BinderAssistant<ServiceInstance<T>>(instanceProvider);
+        binderAssistant = new BinderAssistant<>(instanceProvider);
 
         return this;
     }
@@ -150,7 +151,7 @@ public class RegistrationServiceModuleBuilder<T> {
     public RegistrationServiceModuleBuilder<T> provider(
             final TypeLiteral<? extends Provider<ServiceInstance<T>>> instanceProvider) {
 
-        binderAssistant = new BinderAssistant<ServiceInstance<T>>(instanceProvider);
+        binderAssistant = new BinderAssistant<>(instanceProvider);
 
         return this;
     }

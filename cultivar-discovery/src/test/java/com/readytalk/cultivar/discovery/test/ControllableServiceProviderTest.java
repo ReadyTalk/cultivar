@@ -1,13 +1,13 @@
 package com.readytalk.cultivar.discovery.test;
 
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.apache.curator.x.discovery.ServiceInstance;
-import org.apache.curator.x.discovery.ServiceInstanceBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
+import com.google.common.collect.Lists;
 
 @SuppressWarnings("unchecked")
 public class ControllableServiceProviderTest {
@@ -16,11 +16,9 @@ public class ControllableServiceProviderTest {
 
     private ControllableServiceProvider<Void> provider;
 
-
-
     @Before
     public void setUp() throws Exception {
-        instance = ServiceInstance.<Void>builder().name("name").id("id").build();
+        instance = ServiceInstance.<Void> builder().name("name").id("id").build();
         provider = new ControllableServiceProvider<Void>();
     }
 
@@ -36,14 +34,14 @@ public class ControllableServiceProviderTest {
 
     @SuppressWarnings("AssertEqualsBetweenInconvertibleTypes")
     @Test
-     public void noteError_instance_ReturnsOnGetErrors() {
+    public void noteError_instance_ReturnsOnGetErrors() {
         provider.noteError(instance);
 
         assertEquals(Lists.newArrayList(instance), provider.getErrors());
     }
 
     @Test
-     public void addInstance_instance_ReturnsOnGetInstance() {
+    public void addInstance_instance_ReturnsOnGetInstance() {
         provider.addInstance(instance);
 
         assertEquals(instance, provider.getInstance());

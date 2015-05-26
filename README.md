@@ -5,6 +5,8 @@ Cultivar
 
 Cultivar is a lifecycle manager built around [Curator](http://curator.apache.org) using [Guice](https://code.google.com/p/google-guice/) and [Guava](https://code.google.com/p/guava-libraries/). It wraps the Curator constructors and builders to allow bringing them up in a consistent manner and tearing them down in a consistent manner.
 
+As of Cultivar 1.6.0 it requires Java 7+ and Guice 4. Changes that take advantage of these will come in Cultivar 2.0.
+
 What is Cultivar?
 -----------------
 
@@ -322,7 +324,7 @@ Cultivar can still help with many of the "unsupported" use cases since it will a
 License
 --------
 
-Copyright 2014 ReadyTalk
+Copyright 2014, 2015 ReadyTalk
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

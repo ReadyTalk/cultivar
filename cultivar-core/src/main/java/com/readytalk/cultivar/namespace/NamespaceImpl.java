@@ -11,6 +11,7 @@ import com.google.common.base.Equivalence;
 /**
  * Represents a Namespace object that can be instantiated.
  */
+@SuppressWarnings("ClassExplicitlyAnnotation")
 @Beta
 class NamespaceImpl implements Namespace, Serializable {
     private static final long serialVersionUID = 1L;

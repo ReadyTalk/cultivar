@@ -41,3 +41,10 @@ Changelog
 * Adding tools to facilitate easier testing and rapid prototyping (Issue #60).
 * Added the NodeCacheWrapper (Issue #62).
 * Added the ServiceProviderWrapper (Issue #62).
+
+1.6.0
+-----
+
+* Upgrading to Java 7 (Issue #33).
+* Upgrading to Guice 4 (Issue #27).
+* Upgrading to Curator 2.8.

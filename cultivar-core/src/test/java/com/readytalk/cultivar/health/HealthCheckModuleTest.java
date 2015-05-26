@@ -3,7 +3,6 @@ package com.readytalk.cultivar.health;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
