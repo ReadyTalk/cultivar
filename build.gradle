@@ -7,6 +7,11 @@ buildscript {
   }
 }
 
+plugins {
+  id 'com.readytalk.ci' version '0.4.3'
+  id 'nebula.info' version '2.2.2'
+}
+
 defaultTasks 'build'
 
 subprojects {
@@ -18,6 +23,7 @@ subprojects {
   apply plugin: 'propdeps-maven'
   apply plugin: 'propdeps-idea'
   apply plugin: 'propdeps-eclipse'
+  apply plugin: 'com.readytalk.ci'
   
   defaultTasks 'build'
   
@@ -114,13 +120,10 @@ subprojects {
     } 
   }
   
-  task integTest(type: Test) {
+  tasks.integTest.configure {
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
-  
-    reports.junitXml.destination = file("$buildDir/reports/integTests")
-    reports.html.destination = file("$buildDir/reports/integTests")
-  
+    
     jacoco {
       destinationFile = file("$buildDir/jacoco/test.exec")
       append = true
@@ -147,13 +150,12 @@ subprojects {
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
-	allprojects {
-		tasks.withType(Javadoc) {
-			options.addStringOption('Xdoclint:none', '-quiet')
-		}
-	}
+  allprojects {
+    tasks.withType(Javadoc) {
+      options.addStringOption('Xdoclint:none', '-quiet')
+    }
+  }
 }
-
 
 wrapper {
   gradleVersion '2.4'
