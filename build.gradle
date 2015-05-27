@@ -36,7 +36,7 @@ subprojects {
   targetCompatibility = 1.7
 
   group = 'com.readytalk.cultivar'
-  version = '1.6.0'
+  version = '1.7.0'
 
   project.ext.libVersions = [
     curator: "2.8.0",
