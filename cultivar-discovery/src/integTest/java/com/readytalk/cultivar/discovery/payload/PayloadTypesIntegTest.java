@@ -42,10 +42,6 @@ public class PayloadTypesIntegTest extends AbstractZookeeperClusterTest {
 
     private final ImmutableProperties props = ImmutableProperties.create(ImmutableMap.of("key", "value"));
 
-    private Injector inj;
-
-    private ServiceInstance<ImmutableProperties> service1;
-
     private ServiceProvider<ImmutableProperties> provider;
 
     private CultivarStartStopManager manager;
@@ -53,10 +49,10 @@ public class PayloadTypesIntegTest extends AbstractZookeeperClusterTest {
     @Before
     public void setUp() throws Exception {
 
-        service1 = ServiceInstance.<ImmutableProperties> builder().id("randomid").name("service").payload(props)
+        ServiceInstance<ImmutableProperties> service1 = ServiceInstance.<ImmutableProperties>builder().id("randomid").name("service").payload(props)
                 .build();
 
-        inj = Guice.createInjector(
+        Injector inj = Guice.createInjector(
                 new AbstractModule() {
                     @Override
                     protected void configure() {

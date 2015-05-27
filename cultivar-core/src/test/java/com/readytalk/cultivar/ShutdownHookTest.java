@@ -1,21 +1,20 @@
 package com.readytalk.cultivar;
 
-import com.readytalk.cultivar.management.ShutdownManager;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.readytalk.cultivar.management.ShutdownManager;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ShutdownHookTest {
@@ -76,6 +75,5 @@ public class ShutdownHookTest {
 
         verify(cultivarManager).awaitTerminated();
     }
-
 
 }

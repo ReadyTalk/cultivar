@@ -40,12 +40,6 @@ public class RegistrationIntegTest extends AbstractZookeeperClusterTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
-    private Injector inj;
-
-    private ServiceInstance<Void> service1;
-
-    private ServiceInstance<Void> service2;
-
     private ServiceProvider<Void> provider;
 
     private CultivarStartStopManager manager;
@@ -53,11 +47,11 @@ public class RegistrationIntegTest extends AbstractZookeeperClusterTest {
     @Before
     public void setUp() throws Exception {
 
-        service1 = ServiceInstance.<Void> builder().id(UUID.randomUUID().toString()).name("service").build();
+        ServiceInstance<Void> service1 = ServiceInstance.<Void>builder().id(UUID.randomUUID().toString()).name("service").build();
 
-        service2 = ServiceInstance.<Void> builder().id(UUID.randomUUID().toString()).name("service").build();
+        ServiceInstance<Void> service2 = ServiceInstance.<Void>builder().id(UUID.randomUUID().toString()).name("service").build();
 
-        inj = Guice.createInjector(
+        Injector inj = Guice.createInjector(
                 new AbstractModule() {
                     @Override
                     protected void configure() {
@@ -91,7 +85,7 @@ public class RegistrationIntegTest extends AbstractZookeeperClusterTest {
                                 MoreExecutors.getExitingScheduledExecutorService(new ScheduledThreadPoolExecutor(1),
                                         10, TimeUnit.MILLISECONDS)).build());
 
-        ServiceManager registrationManager = inj.getInstance(Key.get(ServiceManager.class, Discovery.class));
+        inj.getInstance(Key.get(ServiceManager.class, Discovery.class));
 
         provider = inj.getInstance(Key.get(new TypeLiteral<ServiceProvider<Void>>() {
         }, Cultivar.class));

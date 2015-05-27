@@ -41,7 +41,7 @@ public class NodeContainerModuleBuilder<T> extends AbstractModuleBuilder<NodeCon
     }
 
     public static <T> NodeContainerModuleBuilder<T> create(final Class<T> objectType) {
-        return new NodeContainerModuleBuilder<T>(checkNotNull(objectType));
+        return new NodeContainerModuleBuilder<>(checkNotNull(objectType));
     }
 
     /**

@@ -43,7 +43,7 @@ public final class LeaderServiceModuleBuilder<T extends LeaderService> {
     }
 
     public static <T extends LeaderService> LeaderServiceModuleBuilder<T> create(final Key<T> key) {
-        return new LeaderServiceModuleBuilder<T>(checkNotNull(key));
+        return new LeaderServiceModuleBuilder<>(checkNotNull(key));
     }
 
     public LeaderServiceModuleBuilder<T> dependencies(final Module... modules) {
