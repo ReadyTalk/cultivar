@@ -192,7 +192,7 @@ buildEnv {
 }
 
 artifactory {
-  contextUrl = 'http://oss.jfrog.org/artifactory'
+  contextUrl = 'https://oss.jfrog.org/artifactory'
   publish {
     repository {
       repoKey = 'oss-snapshot-local'
