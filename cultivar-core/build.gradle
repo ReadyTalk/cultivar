@@ -6,11 +6,11 @@ dependencies {
     "io.dropwizard.metrics:metrics-core:${libVersions.metrics}",
     "io.dropwizard.metrics:metrics-healthchecks:${libVersions.metrics}",
   )
-  
+
   compile ("org.apache.curator:curator-recipes:${libVersions.curator}") {
     exclude group: 'org.slf4j', module: 'slf4j-log4j12'
   }
-  
+
   testCompile (
     project(':cultivar-test'),
   )

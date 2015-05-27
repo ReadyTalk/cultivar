@@ -2,11 +2,11 @@ dependencies {
   compile (
     project(':cultivar-core'),
   )
-  
+
   compile ("org.apache.curator:curator-x-discovery:${libVersions.curator}") {
     exclude group: 'org.slf4j', module: 'slf4j-log4j12'
   }
-  
+
   testCompile (
     project(':cultivar-test'),
   )

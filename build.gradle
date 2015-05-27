@@ -12,6 +12,7 @@ plugins {
   id 'nebula.info' version '2.2.2'
   id 'com.jfrog.artifactory' version '3.1.0'
   id 'com.jfrog.bintray' version '1.2'
+  id 'maven-publish'
 }
 
 defaultTasks 'build'
@@ -25,6 +26,7 @@ subprojects {
   apply plugin: 'propdeps-maven'
   apply plugin: 'propdeps-idea'
   apply plugin: 'propdeps-eclipse'
+  apply plugin: 'maven-publish'
   apply plugin: 'com.readytalk.ci'
   apply plugin: 'com.readytalk.ci.version.snapshot'
 
@@ -34,7 +36,7 @@ subprojects {
   targetCompatibility = 1.7
 
   group = 'com.readytalk.cultivar'
-  version = '1.6.0-SNAPSHOT'
+  version = '1.6.0'
 
   project.ext.libVersions = [
     curator: "2.8.0",
@@ -150,6 +152,30 @@ subprojects {
       from sharedManifest
     }
   }
+
+  task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+
+  task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+  }
+
+  publishing {
+    publications {
+      maven(MavenPublication) {
+        from components.java
+        artifact sourcesJar {
+          classifier 'sources'
+        }
+        artifact javadocJar {
+          classifier 'javadoc'
+        }
+      }
+    }
+  }
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -162,7 +188,7 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 buildEnv {
   branch = System.env.'GIT_BRANCH'
-  release = (buildEnv.branch ==~ /v\d+\.\d+\.\d+/)
+  release = (branch ==~ /v\d+\.\d+\.\d+/)
 }
 
 artifactory {
