@@ -1,6 +1,6 @@
 buildscript {
   repositories {
-  	maven { url 'http://repo.spring.io/plugins-release' }
+    maven { url 'http://repo.spring.io/plugins-release' }
   }
   dependencies {
     classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
@@ -10,6 +10,8 @@ buildscript {
 plugins {
   id 'com.readytalk.ci' version '0.4.3'
   id 'nebula.info' version '2.2.2'
+  id 'com.jfrog.artifactory' version '3.1.0'
+  id 'com.jfrog.bintray' version '1.2'
 }
 
 defaultTasks 'build'
@@ -24,15 +26,16 @@ subprojects {
   apply plugin: 'propdeps-idea'
   apply plugin: 'propdeps-eclipse'
   apply plugin: 'com.readytalk.ci'
-  
+  apply plugin: 'com.readytalk.ci.version.snapshot'
+
   defaultTasks 'build'
-  
+
   sourceCompatibility = 1.7
   targetCompatibility = 1.7
-  
+
   group = 'com.readytalk.cultivar'
   version = '1.6.0-SNAPSHOT'
-  
+
   project.ext.libVersions = [
     curator: "2.8.0",
     slf4j: "1.7.12",
@@ -45,7 +48,7 @@ subprojects {
     mockito: "1.10.19",
     servlets: "3.0.1",
   ]
-  
+
   ext.sharedManifest = manifest {
     attributes (
       "Specification-Title": "Cultivar",
@@ -55,26 +58,26 @@ subprojects {
       "Implementation-Vendor": "ReadyTalk"
     )
   }
-  
+
   sourceSets {
     integTest {
       compileClasspath += main.output + test.output
       runtimeClasspath += main.output + test.output
     }
   }
-  
+
   configurations {
     integTestCompile {
       extendsFrom testCompile, compile
     }
-  
+
     integTestRuntime.extendsFrom testRuntime
   }
-  
+
   repositories {
     mavenCentral()
   }
-  
+
   dependencies {
     compile (
       "javax.inject:javax.inject:1",
@@ -83,14 +86,14 @@ subprojects {
       "org.slf4j:slf4j-api:${libVersions.slf4j}",
       "com.google.guava:guava:${libVersions.guava}",
     )
-    
+
     testCompile (
       "junit:junit:${libVersions.junit}",
       "org.mockito:mockito-core:${libVersions.mockito}",
       "ch.qos.logback:logback-classic:${libVersions.logback}",
     )
   }
-  
+
   checkstyle {
     toolVersion = '6.0'
     showViolations = true
@@ -98,50 +101,50 @@ subprojects {
     configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
     ignoreFailures = false
   }
-      
+
   findbugs {
     toolVersion = "${libVersions.findbugs}"
     sourceSets = [sourceSets.main]
     ignoreFailures = false
   }
-  
+
   tasks.withType(FindBugs) {
     reports {
       xml.enabled = false
       html.enabled = true
     }
   }
-  
+
   jacocoTestReport {
     reports {
       html.enabled = true
       csv.enabled = true
       xml.enabled = true
-    } 
+    }
   }
-  
+
   tasks.integTest.configure {
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
-    
+
     jacoco {
       destinationFile = file("$buildDir/jacoco/test.exec")
       append = true
     }
   }
-  
+
   jacocoTestReport.dependsOn(test)
   integTest.dependsOn test
   build.dependsOn javadoc
   build.dependsOn jacocoTestReport
   build.dependsOn integTest
-  
+
   jacocoTestReport.mustRunAfter integTest
-  
-  tasks.withType(JavaCompile) { 
-    options.compilerArgs << "-Xlint:all" 
+
+  tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:all"
   }
-  
+
   jar {
     manifest {
       from sharedManifest
@@ -156,6 +159,36 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
   }
 }
+
+buildEnv {
+  branch = System.env.'GIT_BRANCH'
+  release = (buildEnv.branch ==~ /v\d+\.\d+\.\d+/)
+}
+
+artifactory {
+  contextUrl = 'http://oss.jfrog.org/artifactory'
+  publish {
+    repository {
+      repoKey = 'oss-snapshot-local'
+      username = bintrayUser
+      password = bintrayKey
+      maven = true
+    }
+  }
+}
+
+bintray {
+  user = bintrayUser
+  key = bintrayKey
+  pkg {
+    userOrg = 'readytalk'
+    repo = 'maven'
+    version.vcsTag = buildEnv.branch
+  }
+}
+
+artifactoryPublish.onlyIf { !buildEnv.release }
+bintrayUpload.onlyIf { buildEnv.release }
 
 wrapper {
   gradleVersion '2.4'
