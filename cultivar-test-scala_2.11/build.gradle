@@ -1,0 +1,13 @@
+dependencies {
+  compile (
+    project(':cultivar-test'),
+    "org.scala-lang:scala-library:${libVersions.scala}",
+    "com.typesafe.scala-logging:scala-logging_${libVersions.scalaMinor}:${libVersions.scalaLogging}",
+    "org.scalatest:scalatest_${libVersions.scalaMinor}:${libVersions.scalatest}",
+    provided("junit:junit:${libVersions.junit}"),
+  )
+}
+
+javadoc {
+  title = "Cultivar Scala Test Library"
+}

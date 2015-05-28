@@ -1,1 +1,1 @@
-include 'cultivar-core', 'cultivar-test', 'cultivar-discovery', 'cultivar-servlets'
+include 'cultivar-core', 'cultivar-test', 'cultivar-discovery', 'cultivar-servlets', 'cultivar-test-scala_2.11'

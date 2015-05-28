@@ -6,7 +6,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +37,24 @@ public class ConditionalWaitTest {
         conditionalWait = new ConditionalWait(condition);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        try {
+            Thread.sleep(1L);
+        } catch (InterruptedException ex) {
+            // Swallow to remove interrupted flag.
+        }
+    }
+
+    @Test
+    public void await_WithTimeout_ThrowsTimeoutExceptionAfterTime() throws Exception {
+        thrown.expect(TimeoutException.class);
+
+        when(condition.call()).thenReturn(false);
+
+        conditionalWait.await(100, TimeUnit.MILLISECONDS);
+    }
+
     @Test
     public void await_ConditionTrue_CallsConditionOnce() throws Exception {
         when(condition.call()).thenReturn(true);
@@ -61,6 +81,16 @@ public class ConditionalWaitTest {
         Thread.currentThread().interrupt();
 
         conditionalWait.await();
+    }
+
+    @Test
+    public void await_WithTimeout_Interrupted_ThrowsInterruptedException() throws Exception {
+        thrown.expect(InterruptedException.class);
+
+        when(condition.call()).thenReturn(false);
+        Thread.currentThread().interrupt();
+
+        conditionalWait.await(100, TimeUnit.MILLISECONDS);
     }
 
     @Test

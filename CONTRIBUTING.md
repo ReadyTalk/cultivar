@@ -33,6 +33,7 @@ Testing
  * Tests should be named using something akin to Osherove's [naming standards for unit tests](http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html) which follow the form `unitOfWork_StateUnderTest_ExpectedResult`.
  * Try to test one thing per test.
  * If it needs a running instance of ZooKeeper or requires spinning up a `CuratorModule` then it is probably an integration test and belongs in the `integTest` directory.  Unit tests should generally test components in isolation from one another. 
+ * Tests going forward should use scalatest as much as possible. 
  
 Visibility and Documentation
 ----------------------------

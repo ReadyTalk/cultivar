@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
@@ -17,8 +18,13 @@ public class RegistrationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        Multibinder.newSetBinder(binder(), new TypeLiteral<RegistrationService<?>>() {
+        bind(BlankRegistrationService.class).in(Scopes.SINGLETON);
+
+        Multibinder<RegistrationService<?>> services =
+                Multibinder.newSetBinder(binder(), new TypeLiteral<RegistrationService<?>>() {
         });
+
+        services.addBinding().to(BlankRegistrationService.class);
 
         Multibinder.newSetBinder(binder(), ServiceManager.class, Cultivar.class).addBinding()
                 .toProvider(getProvider(Key.get(ServiceManager.class, Discovery.class)));

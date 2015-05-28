@@ -52,4 +52,11 @@ Changelog
 1.7.0
 -----
 
-* Finalizing publishing.
+* Initial release process put into place (Issue #24).
+
+1.7.1
+-----
+
+* Setting up tests to make scalatest an option and to make it easier for other projects to take advantage of scalatest (Issue #69).
+* Fixed a problem where the `RegistrationModule` needed something registered or it threw an unhelpful exception (it now works without registering anything, related to Issue #55).
+* Providing an `await`-with-timeout on `ConditionalWait`.

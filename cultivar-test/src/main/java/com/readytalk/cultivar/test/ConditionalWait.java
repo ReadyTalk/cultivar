@@ -2,6 +2,7 @@ package com.readytalk.cultivar.test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -10,6 +11,8 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 /**
  * A wait method for when things are changing outside of the control of the user and need to be monitored. For things
@@ -19,7 +22,7 @@ import com.google.common.base.Throwables;
 @Beta
 @ThreadSafe
 public class ConditionalWait {
-    private static final long DEFAULT_AWAIT_POLL_MILLIS = 50L;
+    public static final long DEFAULT_AWAIT_POLL_MILLIS = 50L;
 
     private final Lock lock = new ReentrantLock();
 
@@ -50,6 +53,28 @@ public class ConditionalWait {
             throw Throwables.propagate(ex);
         } finally {
             lock.unlock();
+        }
+    }
+
+    public void await(final long time, final TimeUnit unit) throws InterruptedException, TimeoutException {
+
+        SimpleTimeLimiter limiter = new SimpleTimeLimiter();
+
+        try {
+            limiter.callWithTimeout(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    ConditionalWait.this.await();
+
+                    return null;
+                }
+            }, time, unit, true);
+        } catch (InterruptedException | TimeoutException ex) {
+            throw ex;
+        } catch (UncheckedTimeoutException ex) {
+            throw new TimeoutException();
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
         }
     }
 }
