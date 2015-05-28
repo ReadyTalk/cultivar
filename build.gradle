@@ -29,6 +29,8 @@ subprojects {
   apply plugin: 'maven-publish'
   apply plugin: 'com.readytalk.ci'
   apply plugin: 'com.readytalk.ci.version.snapshot'
+  apply plugin: 'com.jfrog.artifactory'
+  apply plugin: 'com.jfrog.bintray'
 
   defaultTasks 'build'
 
@@ -176,6 +178,36 @@ subprojects {
       }
     }
   }
+
+  buildEnv {
+    branch = System.env.'GIT_BRANCH'
+    release = (branch ==~ /v\d+\.\d+\.\d+/)
+  }
+
+  artifactory {
+    contextUrl = 'https://oss.jfrog.org/artifactory'
+    publish {
+      repository {
+        repoKey = 'oss-snapshot-local'
+        username = bintrayUser
+        password = bintrayKey
+        maven = true
+      }
+    }
+  }
+
+  bintray {
+    user = bintrayUser
+    key = bintrayKey
+    pkg {
+      userOrg = 'readytalk'
+      repo = 'maven'
+      version.vcsTag = buildEnv.branch
+    }
+  }
+
+  artifactoryPublish.onlyIf { !buildEnv.release }
+  bintrayUpload.onlyIf { buildEnv.release }
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -185,36 +217,6 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
   }
 }
-
-buildEnv {
-  branch = System.env.'GIT_BRANCH'
-  release = (branch ==~ /v\d+\.\d+\.\d+/)
-}
-
-artifactory {
-  contextUrl = 'https://oss.jfrog.org/artifactory'
-  publish {
-    repository {
-      repoKey = 'oss-snapshot-local'
-      username = bintrayUser
-      password = bintrayKey
-      maven = true
-    }
-  }
-}
-
-bintray {
-  user = bintrayUser
-  key = bintrayKey
-  pkg {
-    userOrg = 'readytalk'
-    repo = 'maven'
-    version.vcsTag = buildEnv.branch
-  }
-}
-
-artifactoryPublish.onlyIf { !buildEnv.release }
-bintrayUpload.onlyIf { buildEnv.release }
 
 wrapper {
   gradleVersion '2.4'
