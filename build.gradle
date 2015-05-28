@@ -180,6 +180,11 @@ subprojects {
     }
   }
 
+  tasks.build.dependsOn tasks.sourcesJar, tasks.javadocJar
+  tasks.bintrayUpload.dependsOn tasks.build
+}
+
+allprojects {
   buildEnv {
     branch = System.env.'GIT_BRANCH'
     release = (branch ==~ /v\d+\.\d+\.\d+/)
@@ -210,9 +215,6 @@ subprojects {
   }
 
   artifactoryPublish.onlyIf { !buildEnv.release }
-
-  tasks.build.dependsOn tasks.sourcesJar, tasks.javadocJar
-  tasks.bintrayUpload.dependsOn tasks.build
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
