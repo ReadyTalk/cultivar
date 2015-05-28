@@ -208,6 +208,12 @@ subprojects {
 
   artifactoryPublish.onlyIf { !buildEnv.release }
   bintrayUpload.onlyIf { buildEnv.release }
+
+  tasks.assemble.dependsOn tasks.sourcesJar, tasks.javadocJar
+
+  [artifactoryPublish, bintrayUpload].each { task ->
+    task.dependsOn tasks.assemble
+  }
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
