@@ -7,11 +7,12 @@ buildscript {
   }
 }
 
+
 plugins {
   id 'com.readytalk.ci' version '0.4.3'
   id 'nebula.info' version '2.2.2'
-  id 'com.jfrog.artifactory' version '3.1.0'
-  id 'com.jfrog.bintray' version '1.2'
+  id 'com.jfrog.artifactory' version '3.1.1'
+  id 'com.jfrog.bintray' version '1.1'
   id 'maven-publish'
 }
 
@@ -199,7 +200,9 @@ subprojects {
   bintray {
     user = bintrayUser
     key = bintrayKey
+
     pkg {
+      name = 'cultivar'
       userOrg = 'readytalk'
       repo = 'maven'
       version.vcsTag = buildEnv.branch
@@ -207,13 +210,9 @@ subprojects {
   }
 
   artifactoryPublish.onlyIf { !buildEnv.release }
-  bintrayUpload.onlyIf { buildEnv.release }
 
-  tasks.assemble.dependsOn tasks.sourcesJar, tasks.javadocJar
-
-  [artifactoryPublish, bintrayUpload].each { task ->
-    task.dependsOn tasks.assemble
-  }
+  tasks.build.dependsOn tasks.sourcesJar, tasks.javadocJar
+  tasks.bintrayUpload.dependsOn tasks.build
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
