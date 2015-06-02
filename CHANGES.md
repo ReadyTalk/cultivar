@@ -48,3 +48,8 @@ Changelog
 * Upgrading to Java 7 (Issue #33).
 * Upgrading to Guice 4 (Issue #27).
 * Upgrading to Curator 2.8.
+
+1.7.0
+-----
+
+* Finalizing publishing.
