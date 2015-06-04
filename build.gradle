@@ -16,6 +16,8 @@ plugins {
   id 'maven-publish'
 }
 
+apply plugin: 'idea'
+
 defaultTasks 'build'
 
 subprojects {
@@ -32,6 +34,7 @@ subprojects {
   apply plugin: 'com.readytalk.ci.version.snapshot'
   apply plugin: 'com.jfrog.artifactory'
   apply plugin: 'com.jfrog.bintray'
+  apply plugin: 'scala'
 
   defaultTasks 'build'
 
@@ -52,6 +55,10 @@ subprojects {
     guava: "18.0",
     mockito: "1.10.19",
     servlets: "3.0.1",
+    scala: "2.11.6",
+    scalaLogging: "3.1.0",
+    scalaMinor: "2.11",
+    scalatest: "2.2.4",
   ]
 
   ext.sharedManifest = manifest {
@@ -93,6 +100,9 @@ subprojects {
     )
 
     testCompile (
+    	"org.scala-lang:scala-library:${libVersions.scala}",
+    	"com.typesafe.scala-logging:scala-logging_${libVersions.scalaMinor}:${libVersions.scalaLogging}",
+    	"org.scalatest:scalatest_${libVersions.scalaMinor}:${libVersions.scalatest}",
       "junit:junit:${libVersions.junit}",
       "org.mockito:mockito-core:${libVersions.mockito}",
       "ch.qos.logback:logback-classic:${libVersions.logback}",

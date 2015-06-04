@@ -22,8 +22,6 @@ public abstract class AbstractZookeeperClusterTest {
 
     private static final long MAX_TEST_TIME_SECONDS = 120L;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractZookeeperClusterTest.class);
-
     @Rule
     public final ExternalResource clusterSetup = new ExternalResource() {
         @Override
@@ -48,7 +46,7 @@ public abstract class AbstractZookeeperClusterTest {
                 LOG.info("Tearing Down Cluster.");
                 testingCluster.close();
             } catch (IOException ex) {
-                LOGGER.warn("Exception shutting down cluster.", ex);
+                LOG.warn("Exception shutting down cluster.", ex);
             }
         }
     };

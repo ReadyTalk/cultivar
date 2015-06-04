@@ -34,7 +34,28 @@ What Cultivar Isn't
  * A replacement for Curator. For the most part it provides Curator objects and interfaces directly to the developer.
  * A wrapper for Curator. For the most part it doesn't decorate Curator's behavior, mostly configuring it using the same strategies and objects that Curator itself uses. 
  
- 
+Getting Started
+---------------
+
+Cultivar is published through bintray. To use the latest version (1.7.0):
+
+```groovy
+repositories {
+  jcenter()
+}
+
+// [...]
+
+dependencies {
+  compile (
+    'com.readytalk.cultivar:cultivar-core:1.7.0',
+  )
+}
+```
+
+(and/or whatever other components the projects will be using)
+
+
 Components
 ----------
 
